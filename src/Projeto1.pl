@@ -226,6 +226,9 @@ get_X([H1|T1],L,N,Hv,Acc1,_,AccNum):-
     junta(Acc1,[H1],Acc3),
     get_X(T1,L,N,Hv,Acc3,0,AccNum)).
 
+espaco_fila(Fila, Esp , Hv):-
+    get_X(Fila,L,N,Hv),
+    Esp = espaco(N,L).
 
 
 
