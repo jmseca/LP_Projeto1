@@ -165,16 +165,66 @@ permutacoes_soma(Num,Els,Soma,Comb1,Acc1,Acc2):-
 %get_numberX(L,N) numeros do espaco
 
 
-get_numberX([[0,0]|_],0).
-get_numberX([],0).
+%get_numberX([_|T1],_):-is_list(T1),T1==[],!.
+get_numberX([[H1,_]|_],H1):-number(H1),H1 =\=0.
+get_numberX([_|T1],N):-get_numberX(T1,N).
 
-get_numberX([H1|T1],N):-
-    length(H1,Size),!, %nao queremos mais Size (assim, se for _, Size <- 0)
-    Size =\= 0->
-        [E1,_] = H1,
-        get_numberX(T1,N_new),
-        N is N_new+E1,!;
-    get_numberX(T1,N).
+zero2(A,B):- A=:=0,B=:=0.
+
+get_listX(F,L):-
+    get_listX(F,L,[],0).
+
+get_listX(_,L,L,1).
+
+
+get_listX([H1|R],L,Acc,_):-
+    is_list(R),
+    R == [],
+    (var(H1)->
+        junta(Acc,[H1],Acc3);
+    Acc3 = Acc),
+    get_listX(R,L,Acc3,1).
+
+
+get_listX([H1|T1],L,Acc1,_):-
+    (nonvar(H1) ->
+        H1 = [E1,E2],
+        writeln(E1),
+        (zero2(E1,E2) ->
+            get_listX(T1,L,Acc1,1);
+        get_listX(T1,L,[],0));
+    junta(Acc1,[H1],Acc3),
+    get_listX(T1,L,Acc3,0)).
+
+
+get_X(F,L,N,Hv):-
+    get_X(F,L,N,Hv,[],0,0).
+
+get_X(_,L,Num,_,L,1,Num).
+
+
+get_X([H1|R],L,N,Hv,Acc,_,AccNum):-
+    is_list(R),
+    R == [],
+    (var(H1)->
+        junta(Acc,[H1],Acc3);
+    Acc3 = Acc),
+    get_X(R,L,N,Hv,Acc3,1,AccNum).
+
+
+get_X([H1|T1],L,N,Hv,Acc1,_,AccNum):-
+    (nonvar(H1) ->
+        H1 = [E1,E2],
+        (zero2(E1,E2) ->
+            get_X(T1,L,N,Hv,Acc1,1,AccNum);
+            (Hv == h ->
+                get_X(T1,L,N,Hv,[],0,E2);
+            Hv == v,
+            get_X(T1,L,N,Hv,[],0,E1))
+            )
+        ;
+    junta(Acc1,[H1],Acc3),
+    get_X(T1,L,N,Hv,Acc3,0,AccNum)).
 
 
 
@@ -207,6 +257,7 @@ espaco_num_list([H1|T1],Hv,N,L):-
 %---------------------------------------------------------------------------------
 
 
+    
 
 
 
