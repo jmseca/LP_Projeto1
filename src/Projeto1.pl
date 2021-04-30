@@ -158,7 +158,7 @@ get_X([H1|R],L,N,Hv,Acc,_,AccNum):-
 get_X([H1|T1],L,N,Hv,Acc1,_,AccNum):-
     (nonvar(H1) ->
         H1 = [E1,E2],
-        (zero2(E1,E2) ->
+        (maplist(=:=(0),[E1,E2]) ->
             get_X(T1,L,N,Hv,Acc1,1,AccNum);
             (Hv == h ->
                 get_X(T1,L,N,Hv,[],0,E2);
@@ -181,6 +181,21 @@ get_X([H1|T1],L,N,Hv,Acc1,_,AccNum):-
 espaco_fila(Fila, Esp , Hv):-
     get_X(Fila,L,N,Hv),
     Esp = espaco(N,L).
+
+
+
+% 3.1.4  <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+%********************************************************************************
+% espacos_fila(Hv, Fila, Espacos)
+% Fila eh uma fila (linha ou coluna) de uma grelha e Hv eh 
+% um dos atomos h ou v. 
+% Significa que Espacos eh a lista de todos os espacos de Fila, 
+% da esquerda para a direita 
+%********************************************************************************
+
+espacos_fila(Hv,F,Esp):-
+    bagof(X,espaco_fila(F,X,Hv),Esp).
     
 
 
