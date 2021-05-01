@@ -123,90 +123,43 @@ permutacoes_soma(Num,Els,Soma,Comb1,Acc1,Acc2):-
 
 % 3.1.3  <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
-
+%---------------------------------------------------------------------------------
+% zeros(L)
+% true, se L for uma lista de zeros, false caso contrario
+% --------------------------------------------------------------------------------
 zeros([]).
 zeros([H|T]):-
     H=:=0,
     zeros(T).
 
-tika(F,L):-
-    tika(F,L,[],[],0).
-
-%experimentar devolver ja uma lista de solucoes
-
-
-tika([],L,L,2):-writeln(bom_dai2).
-
-tika([H|T],L,Acc,Control):-
-    (T == [] ->
-        NewC is Control+1,
-        append(Acc,[H],Anew),
-        writeln(T),
-        writeln(NewC),
-        writeln(Acc),
-        tika(T,L,Anew,NewC);
-    Control =< 1,
-    (nonvar(H)->
-        H = [E1,E2],
-        (zeros([E1,E2]) ->
-            NewC is Control+1,
-            tika(T,Acc,Acc,NewC),
-            tika(T,_,[],0);
-        % H tem numeros diff de 0
-        append(Acc,[H],Anew),
-        tika(T,L,Anew,Control));
-    % H e uma var    
-    NewC is 1, %econtrou-se uma Var
-    append(Acc,[H],Anew),
-    tika(T,L,Anew,NewC))).
-    
-    
-
 %---------------------------------------------------------------------------------
-% aux_313(Fila,L,N,Hv)
-% Funcao auxiliar do espaco_fila.
-% Fila eh uma fila (linha ou coluna) de um puzzle e H_V eh um
-% dos atomos h ou , conforme se trate de uma fila horizontal ou vertical,
-% respetivamente.
-%
-% Significa que L e N sao a lista de posicoes e a soma dessas posicoes, 
-% de um espaco, respetivamente
-%
-% Sao usados 3 acumuladores
-%   1. Guarda as variaveis indefinidas
-%   2. Serve para controlar que ramo da funcao devemos seguir
-%   3. Guarda o numero que sera do N
+% get_varnum(F,L)
+% Sendo F uma Fila,
+% Significa que L e uma lista que contem as variaveis de um Espaco
+% e o par com os numeros que vao determinar a soma do Espaco, dependendo
+% se eh linha ou coluna
 % --------------------------------------------------------------------------------
+get_varnum(F,L):-
+    get_varnum(F,L,0).
 
 
-get_X(F,L,N,Hv):-
-    get_X(F,L,N,Hv,[],0,0).
+get_varnum([],[],2).
 
-get_X(_,L,Num,_,L,1,Num).
+get_varnum([H|F],L,C):-
+    C>=1,
+    (var(H)->
+        get_varnum(F,L2,2),
+        append([H],L2,L);
+    get_varnum([],L,C)).
 
+get_varnum([H|F],L,0):-
+    nonvar(H),
+    \+zeros(H),
+    get_varnum(F,L2,1),
+    append([H],L2,L).
 
-get_X([H1|R],L,N,Hv,Acc,_,AccNum):-
-    is_list(R),
-    R == [],
-    (var(H1)->
-        append(Acc,[H1],Acc3);
-    Acc3 = Acc),
-    get_X(R,L,N,Hv,Acc3,1,AccNum).
-
-
-get_X([H1|T1],L,N,Hv,Acc1,_,AccNum):-
-    (nonvar(H1) ->
-        H1 = [E1,E2],
-        (maplist(=(0),[E1,E2]) ->
-            get_X(T1,L,N,Hv,Acc1,1,AccNum);
-            (Hv == h ->
-                get_X(T1,L,N,Hv,[],0,E2);
-            Hv == v,
-            get_X(T1,L,N,Hv,[],0,E1))
-            )
-        ;
-    append(Acc1,[H1],Acc3),
-    get_X(T1,L,N,Hv,Acc3,0,AccNum)).
+get_varnum([_|F],L,0):-
+    get_varnum(F,L,0).
 
 %********************************************************************************
 % espaco_fila(Fila, Esp, H_V)
@@ -218,8 +171,11 @@ get_X([H1|T1],L,N,Hv,Acc1,_,AccNum):-
 %********************************************************************************
 
 espaco_fila(Fila, Esp , Hv):-
-    get_X(Fila,L,N,Hv),
-    Esp = espaco(N,L).
+    get_varnum(Fila,Vnum),
+    Vnum = [[E1,E2]|L],
+    (Hv==h -> 
+        Esp = espaco(E2,L);
+    Esp = espaco(E1,L)).
 
 
 
@@ -241,6 +197,15 @@ espacos_fila(Hv,F,Esp):-
 
 %Como definir as fincoes (nos comentarios) se adicionarmos um parametro?? 
 
+%---------------------------------------------------------------------------------
+% nonvars(L)
+% true, se L for uma lista sem vars, false caso contrario
+% --------------------------------------------------------------------------------
+nonvars([]).
+nonvars([H|T]):-
+    nonvar(H),
+    nonvars(T).
+
 %********************************************************************************
 % espacos_puzzle(Puzzle, Espacos)
 % Puzzle eh a lista de espacos de Puzzle, tal como descrito na
@@ -252,13 +217,19 @@ espacos_fila(Hv,F,Esp):-
 espacos_puzzle(P,E):-
     espacos_puzzle(P,E,h,P).
 
-espacos_puzzle([P1|P2],[Esp1|Esp2],Hv,Pbase):-
-    espacos_fila(Hv,P1,Esp1),
-    (P2 == [] ->
-        Hv == h,
-        NewP = mat_transposta(Pbase),
-        espacos_puzzle(NewP,Esp2,v,Pbase);
-    espacos_puzzle(P2,Esp2,Hv,Pbase)).
+espacos_puzzle([],Esp,Hv,Pbase):-
+    (Hv==h->
+        mat_transposta(Pbase,Pnew),
+        espacos_puzzle(Pnew,Esp,v,_);
+    Esp=[]).
+
+espacos_puzzle([P1|P2],Esp,Hv,Pbase):-
+    %(maplist(nonvar,P1) -> isto dava aquele erro chato do __aux_maplist :(
+    (nonvars(P1) -> 
+        espacos_puzzle(P2,Esp,Hv,Pbase);
+    espacos_fila(Hv,P1,NewP),
+    espacos_puzzle(P2,Esp2,Hv,Pbase),
+    append(NewP,Esp2,Esp)).
     
     
 
