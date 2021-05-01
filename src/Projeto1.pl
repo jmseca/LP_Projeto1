@@ -211,7 +211,7 @@ nonvars([H|T]):-
 % Puzzle eh a lista de espacos de Puzzle, tal como descrito na
 % Seccao 2.1, passo 1 do enunciado.
 %
-% Usa
+% .......
 %********************************************************************************
 
 espacos_puzzle(P,E):-
@@ -231,9 +231,56 @@ espacos_puzzle([P1|P2],Esp,Hv,Pbase):-
     espacos_puzzle(P2,Esp2,Hv,Pbase),
     append(NewP,Esp2,Esp)).
     
+
+% 3.1.6  <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+%---------------------------------------------------------------------------------
+% var_in_list(V,L2)
+% V eh uma variavel
+% Significa que a mesma variavel V encontra-se em L2
+% --------------------------------------------------------------------------------
+var_in_list(V,[H2|L2]):-
+    (L2 == [] -> 
+        V == H2;
+    (V == H2 ->
+        var_in_list(V,[H2]);
+    var_in_list(V,L2))).
     
+%---------------------------------------------------------------------------------
+% vars_in_list(L1,L2)
+% L1 e L2 sao uma lista de variaveis
+% Significa que ha pelo menos uma variavel comum entre L1 e L2
+% --------------------------------------------------------------------------------
 
 
+vars_in_list([H1|_],L2):-
+    var_in_list(H1,L2),
+    !. %ja foi encontrada uma var igual
+
+vars_in_list([_|L1],L2):-
+    vars_in_list(L1,L2).
+
+
+
+%********************************************************************************
+% espacos_com_posicoes_comuns(Espacos,Esp,Esps_com)
+% Espacoes eh uma lista de espacos e Esp eh um espaco.
+% Significa que Esps_com eh a lista de espacos com variaveis em
+% comum com Esp, exceptuando Esp.
+% 
+%********************************************************************************
+
+espacos_com_posicoes_comuns([],_,[]).
+
+espacos_com_posicoes_comuns([H|E],Esp,Ecom):-
+    (H == Esp ->
+        espacos_com_posicoes_comuns(E,Esp,Ecom);
+    espaco(_,L1) = H,
+    espaco(_,L2) = Esp,
+    (vars_in_list(L1,L2)->
+        espacos_com_posicoes_comuns(E,Esp,Ecom2),
+        append([H],Ecom2,Ecom); %ponderar passar isto para [H1|Ecom2] ou nao
+    espacos_com_posicoes_comuns(E,Esp,Ecom))).
 
 
 

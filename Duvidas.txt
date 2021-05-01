@@ -1,2 +1,6 @@
 1. Pq é que me aparece aquele erro do __aux_maplist/2, quando faço maplist(=:=(0),Lista)
+
 2. Como definir as funcoes nos comentarios quando adiciono parametros
+
+3. Nos espacos_com_posicoes_comuns dava jeito passar Esp para a lista do espaco, 
+para nao o fazer tds os ciclos. Como podemos fazer isso.
