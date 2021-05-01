@@ -287,7 +287,7 @@ espacos_com_posicoes_comuns([H|E],Esp,Ecom):-
 
 %********************************************************************************
 % permutacoes_soma_espacos(Espacos,Perms_soma)
-% Espacoes eh uma lista de espacos.
+% Espacos eh uma lista de espacos.
 % Significa que Perms_soma eh a lista de listas de 2 elementos, em que
 % o 1o elemento eh um espaco de Espacos e o 2o eh a lista ordenada
 % de permutacoes cuja soma eh igual a soma do espaco
@@ -304,5 +304,64 @@ permutacoes_soma_espacos([H1|E],P):-
     %writeln(H2),
     permutacoes_soma_espacos(E,P2),
     append([[H1,Perms]],P2,P).
+
+% 3.1.8  <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+%---------------------------------------------------------------------------------
+% espaco_get_perms_soma(Esp,Perms_soma,Eperm)
+% Esp eh um Espaco e Perms_soma eh eh uma lista de listas tal como 
+% obtido no predicado permutacoes_soma_espacos.
+% Significa que Eperm eh a lista de permutacoes de Perm_soma associada
+% ao espaco Esp.
+% --------------------------------------------------------------------------------
+espaco_get_perms_soma(E,[H|Psom],Eperm):-
+    H = [Esp2,Perms],
+    (Esp2 == E ->
+        Eperm = Perms;
+    espaco_get_perms_soma(E,Psom,Eperm)).
+
+change_var(_,_,[],[]):-!.
+change_var(N,V,[H1|L1],Out):-
+    (V==H1 ->
+        change_var(N,V,L1,Out2),
+        append([N],Out2,Out);
+    change_var(N,V,L1,Out2),
+    append([H1],Out2,Out)).
+
+multi_change_var(_,_,[],[]):-!.
+multi_change_var(N,Var,[H|L],[Ho|Out]):-
+    change_var(N,Var,H,Ho),
+    multi_change_var(N,Var,L,Out).
+
+
+multi_change_var2([H1|N],[H2|Var],L,L2):- 
+    (N == [] ->
+        multi_change_var(H1,H2,L,L2);
+    multi_change_var(H1,H2,L,L1),
+    multi_change_var2(N,Var,L1,L2)).
+
+
+
+%********************************************************************************
+% permutacao_possivel_espaco(Perm,Esp,Espacos,Perms_soma)
+% Perm eh uma permutacao, Esp eh um espaco, Espacos eh uma
+% lista de espacos e Perms_soma eh uma lista de listas tal como 
+% obtido no predicado permutacoes_soma_espacos.
+% Significa que Perm eh uma permutacao possivel para o espaco Esp,
+% tal como descrito na Seccao 2.1, passo 2 do enunciado
+%********************************************************************************
+
+permutacao_possivel_espaco(P,E,Eos,Psoma):-
+    espacos_com_posicoes_comuns(Eos,E,Ecom),
+    espaco_get_perms_soma(E,Psoma,Eperm),
+    permutacao_possivel_espaco(P,E,Eos,Psoma,Ecom,Eperm).
+
+permutacao_possivel_espaco([],_,_,_,_,[]).
+
+permutacao_possivel_espaco(P,E,Eos,Psoma,Ecom,[Perm1|Eperm]):-
+    (check_permutacao_valida(E,Psoma,Ecom,Perm1) -> %por fazer
+        P = Perm1;
+    permutacao_possivel_espaco(P,E,Eos,Psoma,Ecom,Eperm)).
+    
 
 
