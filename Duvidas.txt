@@ -1,0 +1,2 @@
+1. Pq é que me aparece aquele erro do __aux_maplist/2, quando faço maplist(=:=(0),Lista)
+2. Como definir as funcoes nos comentarios quando adiciono parametros

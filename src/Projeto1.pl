@@ -123,6 +123,45 @@ permutacoes_soma(Num,Els,Soma,Comb1,Acc1,Acc2):-
 
 % 3.1.3  <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
+
+zeros([]).
+zeros([H|T]):-
+    H=:=0,
+    zeros(T).
+
+tika(F,L):-
+    tika(F,L,[],[],0).
+
+%experimentar devolver ja uma lista de solucoes
+
+
+tika([],L,L,2):-writeln(bom_dai2).
+
+tika([H|T],L,Acc,Control):-
+    (T == [] ->
+        NewC is Control+1,
+        append(Acc,[H],Anew),
+        writeln(T),
+        writeln(NewC),
+        writeln(Acc),
+        tika(T,L,Anew,NewC);
+    Control =< 1,
+    (nonvar(H)->
+        H = [E1,E2],
+        (zeros([E1,E2]) ->
+            NewC is Control+1,
+            tika(T,Acc,Acc,NewC),
+            tika(T,_,[],0);
+        % H tem numeros diff de 0
+        append(Acc,[H],Anew),
+        tika(T,L,Anew,Control));
+    % H e uma var    
+    NewC is 1, %econtrou-se uma Var
+    append(Acc,[H],Anew),
+    tika(T,L,Anew,NewC))).
+    
+    
+
 %---------------------------------------------------------------------------------
 % aux_313(Fila,L,N,Hv)
 % Funcao auxiliar do espaco_fila.
@@ -158,7 +197,7 @@ get_X([H1|R],L,N,Hv,Acc,_,AccNum):-
 get_X([H1|T1],L,N,Hv,Acc1,_,AccNum):-
     (nonvar(H1) ->
         H1 = [E1,E2],
-        (maplist(=:=(0),[E1,E2]) ->
+        (maplist(=(0),[E1,E2]) ->
             get_X(T1,L,N,Hv,Acc1,1,AccNum);
             (Hv == h ->
                 get_X(T1,L,N,Hv,[],0,E2);
@@ -196,6 +235,31 @@ espaco_fila(Fila, Esp , Hv):-
 
 espacos_fila(Hv,F,Esp):-
     bagof(X,espaco_fila(F,X,Hv),Esp).
+
+
+% 3.1.5  <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+%Como definir as fincoes (nos comentarios) se adicionarmos um parametro?? 
+
+%********************************************************************************
+% espacos_puzzle(Puzzle, Espacos)
+% Puzzle eh a lista de espacos de Puzzle, tal como descrito na
+% Seccao 2.1, passo 1 do enunciado.
+%
+% Usa
+%********************************************************************************
+
+espacos_puzzle(P,E):-
+    espacos_puzzle(P,E,h,P).
+
+espacos_puzzle([P1|P2],[Esp1|Esp2],Hv,Pbase):-
+    espacos_fila(Hv,P1,Esp1),
+    (P2 == [] ->
+        Hv == h,
+        NewP = mat_transposta(Pbase),
+        espacos_puzzle(NewP,Esp2,v,Pbase);
+    espacos_puzzle(P2,Esp2,Hv,Pbase)).
+    
     
 
 
