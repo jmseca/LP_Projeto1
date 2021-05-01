@@ -283,8 +283,26 @@ espacos_com_posicoes_comuns([H|E],Esp,Ecom):-
     espacos_com_posicoes_comuns(E,Esp,Ecom))).
 
 
+% 3.1.7  <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
+%********************************************************************************
+% permutacoes_soma_espacos(Espacos,Perms_soma)
+% Espacoes eh uma lista de espacos.
+% Significa que Perms_soma eh a lista de listas de 2 elementos, em que
+% o 1o elemento eh um espaco de Espacos e o 2o eh a lista ordenada
+% de permutacoes cuja soma eh igual a soma do espaco
+%********************************************************************************
 
+permutacoes_soma_espacos([],[]).
 
+permutacoes_soma_espacos([H1|E],P):-
+    writeln(youhi),
+    espaco(Soma,Vars) = H1,
+    length(Vars,N),
+    permutacoes_soma(N,[1,2,3,4,5,6,7,8,9],Soma,Perms),
+    %H2 = [H1,Perms], Pq q nao estava a funcionar com isto?
+    %writeln(H2),
+    permutacoes_soma_espacos(E,P2),
+    append([[H1,Perms]],P2,P).
 
 
