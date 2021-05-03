@@ -6,3 +6,5 @@
 para nao o fazer tds os ciclos. Como podemos fazer isso.
 
 4. os parametros dos comentarios podem ser diff dos da funcao? 
+
+5. suposto devolver [] ou false na 3.1.8

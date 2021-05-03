@@ -320,25 +320,75 @@ espaco_get_perms_soma(E,[H|Psom],Eperm):-
         Eperm = Perms;
     espaco_get_perms_soma(E,Psom,Eperm)).
 
-change_var(_,_,[],[]):-!.
-change_var(N,V,[H1|L1],Out):-
+%---------------------------------------------------------------------------------
+% muda_var(A,Var,L1,L2)
+% A eh um atomo, Var uma variavel e L1 eh uma lista
+% Significa que L2 eh a lista que resulta de substituir as variaveis Var 
+% da lista L1 para A
+% --------------------------------------------------------------------------------
+muda_var(_,_,[],[]):-!.
+muda_var(A,V,[H1|L1],Out):-
     (V==H1 ->
-        change_var(N,V,L1,Out2),
-        append([N],Out2,Out);
-    change_var(N,V,L1,Out2),
+        muda_var(A,V,L1,Out2),
+        append([A],Out2,Out);
+    muda_var(A,V,L1,Out2),
     append([H1],Out2,Out)).
 
-multi_change_var(_,_,[],[]):-!.
-multi_change_var(N,Var,[H|L],[Ho|Out]):-
-    change_var(N,Var,H,Ho),
-    multi_change_var(N,Var,L,Out).
+%---------------------------------------------------------------------------------
+% muda_multi_var(La,Lvar,L1,L2)
+% La eh uma lista de atomos, Lvar eh uma lista de variaveis e L1 eh uma lista
+% O tamanho de La eh igual ao de Lvar
+% Significa que L2 eh a lista  que resulta de substituir tds as 
+% ocorrencias variaveis de Lvar pelo seu atomo correspondente em La.
+% --------------------------------------------------------------------------------
+muda_multi_var([H1|A],[H2|Var],L1,L2):-
+    (A == [] ->
+        muda_var(H1,H2,L1,L2);
+    muda_var(H1,H2,L1,L3),
+    muda_multi_var(A,Var,L3,L2)).
 
+%---------------------------------------------------------------------------------
+% multi_muda_var(A,Var,Ll,L2)
+% A eh um atomo, Var eh uma variavel, Ll eh uma lista de listas
+% Significa que L2 eh a lista de listas que resulta de substituir tds as 
+% ocorrencias de Var em Ll por A
+% --------------------------------------------------------------------------------
+multi_muda_var(_,_,[],[]):-!.
+multi_muda_var(A,Var,[H|L],[Ho|Out]):-
+    muda_var(A,Var,H,Ho),
+    multi_muda_var(A,Var,L,Out).
 
-multi_change_var2([H1|N],[H2|Var],L,L2):- 
+%---------------------------------------------------------------------------------
+% multi_muda_var2(La,Lvar,Ll,L2)
+% La eh uma lista de atomos, Lvar eh uma lista de variaveis e Ll eh uma lista 
+% de listas. O tamanho de La eh igual ao de Lvar.
+% Significa que L2 eh a lista de listas que resulta de substituir tds as 
+% ocorrencias variaveis de Lvar pelo seu atomo correspondente em La
+% --------------------------------------------------------------------------------
+multi_muda_var2([H1|N],[H2|Var],L,L2):- 
     (N == [] ->
-        multi_change_var(H1,H2,L,L2);
-    multi_change_var(H1,H2,L,L1),
-    multi_change_var2(N,Var,L1,L2)).
+        multi_muda_var(H1,H2,L,L2);
+    multi_muda_var(H1,H2,L,L1),
+    multi_muda_var2(N,Var,L1,L2)).
+
+
+
+
+% verifica se eh uma permutacao valida para 
+check_permutacao_valida(Perm1,L1,[E1|Ecom],Psoma):-
+    %se fizermos uma a uma nem vai ser preciso o mmvar2, apenas o mmvar1
+    (Ecom==[]->
+       writeln('bom dia'),
+       true;
+    E1 = espaco(_,Lcom),
+    muda_multi_var(Perm1,L1,Lcom,Lnew),
+    espaco_get_perms_soma(E1,Psoma,PermCom),
+    %verificar se unifica com pelo menos uma permutacao
+    include(=(Lnew),PermCom,Ucheck),
+    length(Ucheck,Size),
+    Size>0,
+    check_permutacao_valida(Perm1,L1,Ecom,Psoma)).
+
 
 
 
@@ -359,9 +409,14 @@ permutacao_possivel_espaco(P,E,Eos,Psoma):-
 permutacao_possivel_espaco([],_,_,_,_,[]).
 
 permutacao_possivel_espaco(P,E,Eos,Psoma,Ecom,[Perm1|Eperm]):-
-    (check_permutacao_valida(E,Psoma,Ecom,Perm1) -> %por fazer
+    E = espaco(_,L1), %substituir isto no inicio (se der)
+    (check_permutacao_valida(Perm1,L1,Ecom,Psoma) -> 
+        writeln(Perm1),
         P = Perm1;
     permutacao_possivel_espaco(P,E,Eos,Psoma,Ecom,Eperm)).
     
 
-
+ola():-
+[1,2,3,4] = [1,2,_,4] ->
+    writeln('deu');
+writeln('nao deu').
