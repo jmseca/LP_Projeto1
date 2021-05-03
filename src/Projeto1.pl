@@ -1,4 +1,5 @@
 :- [codigo_comum].
+:-[puzzles_publicos].
 
 % 3.1.1 <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
@@ -296,7 +297,6 @@ espacos_com_posicoes_comuns([H|E],Esp,Ecom):-
 permutacoes_soma_espacos([],[]).
 
 permutacoes_soma_espacos([H1|E],P):-
-    writeln(youhi),
     espaco(Soma,Vars) = H1,
     length(Vars,N),
     permutacoes_soma(N,[1,2,3,4,5,6,7,8,9],Soma,Perms),
@@ -347,47 +347,29 @@ muda_multi_var([H1|A],[H2|Var],L1,L2):-
     muda_var(H1,H2,L1,L3),
     muda_multi_var(A,Var,L3,L2)).
 
-%---------------------------------------------------------------------------------
-% multi_muda_var(A,Var,Ll,L2)
-% A eh um atomo, Var eh uma variavel, Ll eh uma lista de listas
-% Significa que L2 eh a lista de listas que resulta de substituir tds as 
-% ocorrencias de Var em Ll por A
-% --------------------------------------------------------------------------------
-multi_muda_var(_,_,[],[]):-!.
-multi_muda_var(A,Var,[H|L],[Ho|Out]):-
-    muda_var(A,Var,H,Ho),
-    multi_muda_var(A,Var,L,Out).
+
 
 %---------------------------------------------------------------------------------
-% multi_muda_var2(La,Lvar,Ll,L2)
-% La eh uma lista de atomos, Lvar eh uma lista de variaveis e Ll eh uma lista 
-% de listas. O tamanho de La eh igual ao de Lvar.
-% Significa que L2 eh a lista de listas que resulta de substituir tds as 
-% ocorrencias variaveis de Lvar pelo seu atomo correspondente em La
+% permutacao_valida(Perm1,L1,Ecom,Psoma)
+% L1 eh a lista com as variaveis a preencher por um dado espaco, Ecom 
+% eh a lista de espacos comuns ao espaco com lista L1 e Psoma eh
+% uma lista de listas tal como 
+% obtido no predicado permutacoes_soma_espacos.
+%
+% Verifica se Perm1 eh uma permutacao valida para o espaco em estudo
 % --------------------------------------------------------------------------------
-multi_muda_var2([H1|N],[H2|Var],L,L2):- 
-    (N == [] ->
-        multi_muda_var(H1,H2,L,L2);
-    multi_muda_var(H1,H2,L,L1),
-    multi_muda_var2(N,Var,L1,L2)).
-
-
-
-
-% verifica se eh uma permutacao valida para 
-check_permutacao_valida(Perm1,L1,[E1|Ecom],Psoma):-
+permutacao_valida(Perm1,L1,[E1|Ecom],Psoma):-
     %se fizermos uma a uma nem vai ser preciso o mmvar2, apenas o mmvar1
     (Ecom==[]->
-       writeln('bom dia'),
-       true;
+       true; 
     E1 = espaco(_,Lcom),
     muda_multi_var(Perm1,L1,Lcom,Lnew),
     espaco_get_perms_soma(E1,Psoma,PermCom),
     %verificar se unifica com pelo menos uma permutacao
-    include(=(Lnew),PermCom,Ucheck),
+    include(subsumes_term(Lnew),PermCom,Ucheck), 
     length(Ucheck,Size),
     Size>0,
-    check_permutacao_valida(Perm1,L1,Ecom,Psoma)).
+    permutacao_valida(Perm1,L1,Ecom,Psoma)).
 
 
 
@@ -410,13 +392,39 @@ permutacao_possivel_espaco([],_,_,_,_,[]).
 
 permutacao_possivel_espaco(P,E,Eos,Psoma,Ecom,[Perm1|Eperm]):-
     E = espaco(_,L1), %substituir isto no inicio (se der)
-    (check_permutacao_valida(Perm1,L1,Ecom,Psoma) -> 
+    writeln(' '),
+    (permutacao_valida(Perm1,L1,Ecom,Psoma) -> 
         writeln(Perm1),
         P = Perm1;
     permutacao_possivel_espaco(P,E,Eos,Psoma,Ecom,Eperm)).
     
 
-ola():-
-[1,2,3,4] = [1,2,_,4] ->
-    writeln('deu');
-writeln('nao deu').
+
+% 3.1.9  <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+%********************************************************************************
+% permutacoes_possiveis_espaco(Espacos, Psoma, Esp, Pposs)
+% Esp eh um espaco, Espacos eh uma lista de espacos e 
+% Psoma eh uma lista de listas tal como obtido 
+% no predicado permutacoes_soma_espacos.
+%
+% Significa que Pposs eh é uma lista de 2 elementos em que o primeiro é a
+% lista de variáveis de Esp e o segundo eh a lista ordenada de permutacoes 
+% possiveis para o espaço Esp, tal como descrito na Secção 2.1,
+% passo 2 do enunciado
+%********************************************************************************
+
+permutacoes_possiveis_espaco(Eos,Psoma,E,[EL|[PermL]]):-
+    E = espaco(_,EL),
+    espacos_com_posicoes_comuns(Eos,E,Ecom),
+    espaco_get_perms_soma(E,Psoma,Eperm),
+    permutacoes_possiveis_espaco(PermL,E,Eos,Psoma,Ecom,Eperm).
+
+permutacoes_possiveis_espaco([],_,_,_,_,[]).
+
+permutacoes_possiveis_espaco(Perm,E,Eos,Psoma,Ecom,[Perm1|Eperm]):-
+    E = espaco(_,L1), %substituir isto no inicio (se der)
+    (permutacao_valida(Perm1,L1,Ecom,Psoma)->
+        permutacoes_possiveis_espaco(Perm2,E,Eos,Psoma,Ecom,Eperm),
+        append([Perm1],Perm2,Perm);
+    permutacoes_possiveis_espaco(Perm,E,Eos,Psoma,Ecom,Eperm)).
