@@ -300,8 +300,6 @@ permutacoes_soma_espacos([H1|E],P):-
     espaco(Soma,Vars) = H1,
     length(Vars,N),
     permutacoes_soma(N,[1,2,3,4,5,6,7,8,9],Soma,Perms),
-    %H2 = [H1,Perms], Pq q nao estava a funcionar com isto?
-    %writeln(H2),
     permutacoes_soma_espacos(E,P2),
     append([[H1,Perms]],P2,P).
 
@@ -360,15 +358,23 @@ muda_multi_var([H1|A],[H2|Var],L1,L2):-
 % --------------------------------------------------------------------------------
 permutacao_valida(Perm1,L1,[E1|Ecom],Psoma):-
     %se fizermos uma a uma nem vai ser preciso o mmvar2, apenas o mmvar1
-    (Ecom==[]->
-       true; 
+    writeln('-----------------'),
     E1 = espaco(_,Lcom),
+    writeln(E1),
+    writeln(Perm1),
+    writeln(L1),
+    writeln(Lcom),
     muda_multi_var(Perm1,L1,Lcom,Lnew),
     espaco_get_perms_soma(E1,Psoma,PermCom),
+    writeln(Lnew),
+    writeln(PermCom),
     %verificar se unifica com pelo menos uma permutacao
     include(subsumes_term(Lnew),PermCom,Ucheck), 
     length(Ucheck,Size),
     Size>0,
+    writeln('-----------------'),
+    (Ecom == []->
+        true;
     permutacao_valida(Perm1,L1,Ecom,Psoma)).
 
 
@@ -392,9 +398,7 @@ permutacao_possivel_espaco([],_,_,_,_,[]).
 
 permutacao_possivel_espaco(P,E,Eos,Psoma,Ecom,[Perm1|Eperm]):-
     E = espaco(_,L1), %substituir isto no inicio (se der)
-    writeln(' '),
     (permutacao_valida(Perm1,L1,Ecom,Psoma) -> 
-        writeln(Perm1),
         P = Perm1;
     permutacao_possivel_espaco(P,E,Eos,Psoma,Ecom,Eperm)).
     
@@ -414,11 +418,16 @@ permutacao_possivel_espaco(P,E,Eos,Psoma,Ecom,[Perm1|Eperm]):-
 % passo 2 do enunciado
 %********************************************************************************
 
-permutacoes_possiveis_espaco(Eos,Psoma,E,[EL|[PermL]]):-
-    E = espaco(_,EL),
+%permutacoes_possiveis_espaco(Eos,Psoma,E,[EL|[PermL]]):-
+permutacoes_possiveis_espaco(Eos,Psoma,E,Pposs):-
+    E = espaco(_,ELst),
     espacos_com_posicoes_comuns(Eos,E,Ecom),
+    writeln('Comom'),
+    writeln(Ecom),
+    writeln('Comom'),
     espaco_get_perms_soma(E,Psoma,Eperm),
-    permutacoes_possiveis_espaco(PermL,E,Eos,Psoma,Ecom,Eperm).
+    permutacoes_possiveis_espaco(PermL,E,Eos,Psoma,Ecom,Eperm),
+    Pposs = [ELst,PermL].
 
 permutacoes_possiveis_espaco([],_,_,_,_,[]).
 
@@ -428,3 +437,4 @@ permutacoes_possiveis_espaco(Perm,E,Eos,Psoma,Ecom,[Perm1|Eperm]):-
         permutacoes_possiveis_espaco(Perm2,E,Eos,Psoma,Ecom,Eperm),
         append([Perm1],Perm2,Perm);
     permutacoes_possiveis_espaco(Perm,E,Eos,Psoma,Ecom,Eperm)).
+
