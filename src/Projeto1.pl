@@ -469,3 +469,77 @@ permutacoes_possiveis_espacos(Espacos, Perms_poss_esps):-
     %maplist(permutacoes_possiveis_espaco(Espacos, Psoma),Espacos,Perms_poss_esps).
     %falhar again
     get_todas_perm_possiveis(Espacos,Psoma,Perms_poss_esps).
+
+
+% 3.1.11  <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+%---------------------------------------------------------------------------------
+% tamanho_sublistas(L,Slist)
+% L eh uma lista de listas
+% Significa que Slist eh a lista com os tamanhos de cada sublista de L
+% --------------------------------------------------------------------------------
+
+tamanho_sublistas([],[]).
+
+tamanho_sublistas([L1|T],[S1|Sl]):-
+    length(L1,S1),
+    tamanho_sublistas(T,Sl).
+
+
+%---------------------------------------------------------------------------------
+% elimina_primeiros_el(L,L1)
+% L eh uma lista de listas
+% Significa que L1 eh retirando o primeiro elemento de cada sublista.
+% --------------------------------------------------------------------------------
+
+elimina_primeiros_el([],[]).
+
+elimina_primeiros_el([[_|T1]|L],[T1|L1]):-
+    elimina_primeiros_el(L,L1).
+
+%---------------------------------------------------------------------------------
+% primeiro_el_igual(El1,L)
+% L eh uma lista de listas
+% Significa que El1 eh o primeiro elemento de todas as sublistas de L.
+% --------------------------------------------------------------------------------
+
+primeiro_el_igual(_,[]).
+
+primeiro_el_igual(El1,[[El1|_]|L]):-
+    primeiro_el_igual(El1,L).
+
+
+%********************************************************************************
+% numeros_comuns(Lst_Perms, Numeros_comuns)
+% Lst_Perms é uma lista de permutações
+% Significa que Numeros_comuns é uma lista de pares (pos, numero),
+% significando que todas as listas de Lst_Perms contêm o número numero na posição
+% pos.
+%********************************************************************************
+
+numeros_comuns(Lst_Perms, Numeros_comuns):-
+    %se houver permutacoes de tamanho diferente, temos o Size min
+    %mais um maplis a dar erro
+    %maplist(length,Lst_Perms,Size),
+    tamanho_sublistas(Lst_Perms,Size),
+    min_member(Min,Size),
+    numeros_comuns(Lst_Perms, Numeros_comuns,Min,1).
+
+numeros_comuns(_, [],Min,Min_1):-
+    Min_1 is Min+1,!. 
+    %evitar o false final
+
+numeros_comuns([[El1|Res1]|Res], Numeros_comuns,Min,N):-
+    N =< Min,
+    %mais um maplis a dar erro
+    %maplist(elimina_primeiro_el,Res,PreNewRes),
+    elimina_primeiros_el(Res,PreNewRes),
+    append([Res1],PreNewRes,NewRes),
+    NewN is N+1,
+    %O que esta em cima e necessario nos dois casos
+    (primeiro_el_igual(El1,Res) ->
+        numeros_comuns(NewRes, Nc2,Min,NewN),
+        append([[N,El1]],Nc2,Numeros_comuns);
+    numeros_comuns(NewRes, Numeros_comuns,Min,NewN)).
+    
+
