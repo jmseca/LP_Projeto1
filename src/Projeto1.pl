@@ -1,5 +1,5 @@
 :- [codigo_comum].
-:-[puzzles_publicos].
+:- [puzzles_publicos].
 
 % 3.1.1 <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
@@ -358,21 +358,21 @@ muda_multi_var([H1|A],[H2|Var],L1,L2):-
 % --------------------------------------------------------------------------------
 permutacao_valida(Perm1,L1,[E1|Ecom],Psoma):-
     %se fizermos uma a uma nem vai ser preciso o mmvar2, apenas o mmvar1
-    writeln('-----------------'),
+    %writeln('-----------------'),
     E1 = espaco(_,Lcom),
-    writeln(E1),
-    writeln(Perm1),
-    writeln(L1),
-    writeln(Lcom),
+    %writeln(E1),
+    %writeln(Perm1),
+    %writeln(L1),
+    %writeln(Lcom),
     muda_multi_var(Perm1,L1,Lcom,Lnew),
     espaco_get_perms_soma(E1,Psoma,PermCom),
-    writeln(Lnew),
-    writeln(PermCom),
+    %writeln(Lnew),
+    %writeln(PermCom),
     %verificar se unifica com pelo menos uma permutacao
     include(subsumes_term(Lnew),PermCom,Ucheck), 
     length(Ucheck,Size),
     Size>0,
-    writeln('-----------------'),
+    %writeln('-----------------'),
     (Ecom == []->
         true;
     permutacao_valida(Perm1,L1,Ecom,Psoma)).
@@ -422,9 +422,6 @@ permutacao_possivel_espaco(P,E,Eos,Psoma,Ecom,[Perm1|Eperm]):-
 permutacoes_possiveis_espaco(Eos,Psoma,E,Pposs):-
     E = espaco(_,ELst),
     espacos_com_posicoes_comuns(Eos,E,Ecom),
-    writeln('Comom'),
-    writeln(Ecom),
-    writeln('Comom'),
     espaco_get_perms_soma(E,Psoma,Eperm),
     permutacoes_possiveis_espaco(PermL,E,Eos,Psoma,Ecom,Eperm),
     Pposs = [ELst,PermL].
@@ -438,3 +435,37 @@ permutacoes_possiveis_espaco(Perm,E,Eos,Psoma,Ecom,[Perm1|Eperm]):-
         append([Perm1],Perm2,Perm);
     permutacoes_possiveis_espaco(Perm,E,Eos,Psoma,Ecom,Eperm)).
 
+% 3.1.10  <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+%---------------------------------------------------------------------------------
+% get_todas_perm_possiveis(Espacos,Psoma,Ppe)
+% Espacos eh uma lista de espaços, Psoma eh uma lista de listas tal como 
+% obtido no predicado permutacoes_soma_espacos.
+%
+% Significa que Ppe eh a lista de permutações possíveis,
+% tal como descrito na Secção 2.1, no passo 2.
+% --------------------------------------------------------------------------------
+
+get_todas_perm_possiveis(Espacos,Psoma,Ppe):-
+    get_todas_perm_possiveis(Espacos,Psoma,Ppe,Espacos).
+
+get_todas_perm_possiveis(_,_,[],[]).
+
+get_todas_perm_possiveis(Espacos,Psoma,[P1|Ppe],[E1|Espos]):-
+    permutacoes_possiveis_espaco(Espacos,Psoma,E1,P1),
+    get_todas_perm_possiveis(Espacos,Psoma,Ppe,Espos).
+
+
+
+%********************************************************************************
+% permutacoes_possiveis_espacos(Espacos, Perms_poss_esps)
+% Espacos eh uma lista de espaços
+% Significa que Perms_poss_esps eh a lista de permutações possíveis,
+% tal como descrito na Secção 2.1, no passo 2.
+%********************************************************************************
+
+permutacoes_possiveis_espacos(Espacos, Perms_poss_esps):-
+    permutacoes_soma_espacos(Espacos,Psoma),
+    %maplist(permutacoes_possiveis_espaco(Espacos, Psoma),Espacos,Perms_poss_esps).
+    %falhar again
+    get_todas_perm_possiveis(Espacos,Psoma,Perms_poss_esps).
