@@ -547,14 +547,13 @@ numeros_comuns([[El1|Res1]|Res], Numeros_comuns,Min,N):-
 
 %---------------------------------------------------------------------------------
 % unifica_indices(Lst,Numeros_comuns)
-% Numeros comuns eh uma lista de listas tal como obtido no predicado
-% numeros_comuns
+% Numeros comuns eh uma lista de listas tal como obtido 
+% no predicado numeros_comuns
 %
 % Unifica as variaveis de Lst, com os valores de Numeros_comuns associado 
 % ao indice da variavel que se vai unificar
 % --------------------------------------------------------------------------------
 
-%Ponderar se fazemos condicao d eparagem para quando numCom==[].
 
 unifica_indices(Lst,Numeros_comuns):-
     %Comecar no indice 1 (primeiro)
@@ -568,10 +567,10 @@ unifica_indices([H1|Lst1],[[Ind,Val]|Numeros_comuns1],Ind):-
     unifica_indices(Lst1,Numeros_comuns1,IndN).
 
     
-unifica_indices([_|Lst1],[[Ind1,_]|Numeros_comuns1],Ind2):-
+unifica_indices([_|Lst1],[[Ind1,Val]|Numeros_comuns1],Ind2):-
     Ind1 =\= Ind2,
     IndN is Ind2+1,
-    unifica_indices(Lst1,[[Ind1,_]|Numeros_comuns1],IndN).
+    unifica_indices(Lst1,[[Ind1,Val]|Numeros_comuns1],IndN).
 
 %********************************************************************************
 % atribui_comuns(Perms_Possiveis)
@@ -630,4 +629,33 @@ retira_impossiveis([[H1,Perm1]|Perms_Possiveis1], [[H1,Perm2]|Novas_Perms_Possiv
     
 
 
+% 3.1.14  <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
+%********************************************************************************
+% simplifica(Perms_Possiveis, Novas_Perms_Possiveis)
+% Perms_Possiveis eh uma lista de permutacoes possiveis
+% Significa que Novas_Perms_Possiveis eh o resultado de 
+% simplificar Perms_Possiveis , ou seja, 
+% aplicando os predicados atribui_comuns e retira_impossiveis,
+% por esta ordem, ate nao haver mais alteracoes.
+%********************************************************************************
+
+
+simplifica(Perms_Possiveis, Novas_Perms_Possiveis):-
+    %writeln('bom dia'),
+    %copiar o argumento para ter algo para comparar e alterar
+    %que nao va unificar com o original
+    simplifica(Perms_Possiveis,Perms_Possiveis, Novas_Perms_Possiveis).
+
+simplifica(Perms1,Perms2, Novas_Perms_Possiveis):-
+    %writeln('ora boas'),
+    atribui_comuns(Perms2),
+    retira_impossiveis(Perms2,Perms3),
+    writeln('-----------'),
+    writeln(Perms1),
+    writeln('===================='),
+    writeln(Perms3),
+    (Perms3 == Perms1 ->
+        %writeln('same'),
+        Perms3 = Novas_Perms_Possiveis;
+    simplifica(Perms3,Perms3,Novas_Perms_Possiveis)).
