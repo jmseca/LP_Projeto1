@@ -2,9 +2,10 @@
 
 
 
-L = [[[_206,_212],[[1,2],[2,1]]],
-[[_242,_244,_254,_260],[[7,1,2,6],[7,1,3,5],[7,1,5,3]]],
-[[_290,_295,_302,_308],[[7,4,9,6],[7,5,8,6],[7,6,8,5]]],
-[[_206,_254,_302],[[1,7,9],[1,9,7],[2,6,9],[2,7,8],[2,8,7],[2,9,6]]]],
-atribui_comuns(L).
+ puzzle_publico(2, Puzzle),
+espacos_puzzle(Puzzle, Espacos),
+permutacoes_possiveis_espacos(Espacos, Perms_Possiveis),
+atribui_comuns(Perms_Possiveis),
+retira_impossiveis(Perms_Possiveis, Novas_Perms_Possiveis),
+maplist(writeln, Novas_Perms_Possiveis)
 

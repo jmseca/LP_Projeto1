@@ -590,3 +590,44 @@ atribui_comuns([P1|Perms_Possiveis1]):-
     unifica_indices(Lst,Numeros_comuns),
     atribui_comuns(Perms_Possiveis1).
 
+
+
+% 3.1.13  <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+%---------------------------------------------------------------------------------
+% retira_nao_unificaveis(Main,L1,L2)
+% Main eh uma lista de variaveis e atomos e L1 eh uma lista de listas
+%
+% Significa que L2 eh a lista de listas que resulta de remover todas
+% as sublistas de L1 que nao unificam com Main
+% --------------------------------------------------------------------------------
+
+%se chegar aqui termina
+retira_nao_unificaveis(_,[],[]):-!.
+
+retira_nao_unificaveis(Main,[H1|L1],L2):-
+    (subsumes_term(Main,H1) ->
+        retira_nao_unificaveis(Main,L1,L3),
+        append([H1],L3,L2);
+    retira_nao_unificaveis(Main,L1,L2)).
+        
+
+
+%********************************************************************************
+% retira_impossiveis(Perms_Possiveis, Novas_Perms_Possiveis)
+% Perms_Possiveis eh uma lista de permutacoes possiveis.
+%
+% Significa que Novas_Perms_Possiveis eh o resultado de tirar 
+% permutacoes impossiveis de Perms_Possiveis,
+% tal como descrito na Seccao 2.1, no passo 3b.
+%********************************************************************************
+
+retira_impossiveis([], []).
+
+retira_impossiveis([[H1,Perm1]|Perms_Possiveis1], [[H1,Perm2]|Novas_Perms_Possiveis1]):-
+    retira_nao_unificaveis(H1,Perm1,Perm2),
+    retira_impossiveis(Perms_Possiveis1,Novas_Perms_Possiveis1).
+    
+
+
+
