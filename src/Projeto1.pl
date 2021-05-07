@@ -543,3 +543,50 @@ numeros_comuns([[El1|Res1]|Res], Numeros_comuns,Min,N):-
     numeros_comuns(NewRes, Numeros_comuns,Min,NewN)).
     
 
+% 3.1.12  <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+%---------------------------------------------------------------------------------
+% unifica_indices(Lst,Numeros_comuns)
+% Numeros comuns eh uma lista de listas tal como obtido no predicado
+% numeros_comuns
+%
+% Unifica as variaveis de Lst, com os valores de Numeros_comuns associado 
+% ao indice da variavel que se vai unificar
+% --------------------------------------------------------------------------------
+
+%Ponderar se fazemos condicao d eparagem para quando numCom==[].
+
+unifica_indices(Lst,Numeros_comuns):-
+    %Comecar no indice 1 (primeiro)
+    unifica_indices(Lst,Numeros_comuns,1).
+
+unifica_indices(_,[],_).
+
+unifica_indices([H1|Lst1],[[Ind,Val]|Numeros_comuns1],Ind):-
+    H1 = Val,
+    IndN is Ind+1,
+    unifica_indices(Lst1,Numeros_comuns1,IndN).
+
+    
+unifica_indices([_|Lst1],[[Ind1,_]|Numeros_comuns1],Ind2):-
+    Ind1 =\= Ind2,
+    IndN is Ind2+1,
+    unifica_indices(Lst1,[[Ind1,_]|Numeros_comuns1],IndN).
+
+%********************************************************************************
+% atribui_comuns(Perms_Possiveis)
+% Perms_Possiveis é uma lista de permutações possíveis,
+% actualiza esta lista atribuindo a cada espaço números comuns
+% a todas as permutações possíveis para esse espaço, 
+% tal como descrito na Secção 2.1, no passo 3a
+%********************************************************************************
+
+%se chegar aqui, termina
+atribui_comuns([]):-!. 
+
+atribui_comuns([P1|Perms_Possiveis1]):-
+    P1 = [Lst,Perms],
+    numeros_comuns(Perms, Numeros_comuns),
+    unifica_indices(Lst,Numeros_comuns),
+    atribui_comuns(Perms_Possiveis1).
+
