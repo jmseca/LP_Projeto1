@@ -642,20 +642,27 @@ retira_impossiveis([[H1,Perm1]|Perms_Possiveis1], [[H1,Perm2]|Novas_Perms_Possiv
 
 
 simplifica(Perms_Possiveis, Novas_Perms_Possiveis):-
-    %writeln('bom dia'),
-    %copiar o argumento para ter algo para comparar e alterar
-    %que nao va unificar com o original
     simplifica(Perms_Possiveis,Perms_Possiveis, Novas_Perms_Possiveis).
 
 simplifica(Perms1,Perms2, Novas_Perms_Possiveis):-
-    %writeln('ora boas'),
     atribui_comuns(Perms2),
     retira_impossiveis(Perms2,Perms3),
-    writeln('-----------'),
-    writeln(Perms1),
-    writeln('===================='),
-    writeln(Perms3),
     (Perms3 == Perms1 ->
-        %writeln('same'),
         Perms3 = Novas_Perms_Possiveis;
     simplifica(Perms3,Perms3,Novas_Perms_Possiveis)).
+
+
+% 3.1.15  <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+%********************************************************************************
+% inicializa(Puzzle, Perms_Possiveis)
+% Puzzle é um puzzle
+%
+% Significa que Perms_Possiveis eh a lista de permutações possiveis 
+% simplificada para Puzzle
+%********************************************************************************
+
+inicializa(Puzzle, Perms_Possiveis):-
+    espacos_puzzle(Puzzle, Espacos),
+    permutacoes_possiveis_espacos(Espacos, Pre_Perms),
+    simplifica(Pre_perms, Perms_Possiveis).
