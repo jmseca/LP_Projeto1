@@ -665,4 +665,31 @@ simplifica(Perms1,Perms2, Novas_Perms_Possiveis):-
 inicializa(Puzzle, Perms_Possiveis):-
     espacos_puzzle(Puzzle, Espacos),
     permutacoes_possiveis_espacos(Espacos, Pre_Perms),
-    simplifica(Pre_perms, Perms_Possiveis).
+    simplifica(Pre_Perms, Perms_Possiveis).
+
+
+% 3.2.1  <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+%********************************************************************************
+% escolhe_menos_alternativas(Perms_Possiveis, Escolha)
+% Perms_Possiveis eh uma lista de permutacoes possiveis 
+
+% Significa que Escolha eh o elemento de Perms_Possiveis escolhido segundo
+% o critério indicado na Secção 2.2, no passo 1 do enunciado.
+% Se todos os espacos em Perms_Possiveis tiverem associadas listas de
+% permutações unitarias, o predicado deve devolver "falso".
+%********************************************************************************
+
+escolhe_menos_alternativas(Perms_Possiveis, Escolha):-
+    maplist(tamanho_sublistas,Perms_Possiveis,PreSize),
+    maplist(last,PreSize,Size),
+    %verificar se ha pelo menos uma lista de perm com
+    % mais do que 1 perm
+    include(<(1),Size,Check),
+    Check \== [],
+    nth1(Ind,Size,ElMin),
+    min_member(ElMin,Check),
+    ElMin>1,
+    % pq so queremos o primeiro se houver mais que um
+    !,
+    nth1(Ind,Perms_Possiveis,Escolha).
