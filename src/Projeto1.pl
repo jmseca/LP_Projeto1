@@ -733,8 +733,6 @@ resolve_aux(P, P):-
     %ponderar ter funcao para isto, pq tambem usamos dois predicados acima
     maplist(tamanho_sublistas,P,PreSize),
     maplist(last,PreSize,Size),
-    writeln('SSSSSSSSSSSSSSSSSSSSSS'),
-    writeln(Size),
     %verificar se ha pelo menos uma lista de perm com
     % mais do que 1 perm
     include(<(1),Size,Check),
@@ -748,3 +746,16 @@ resolve_aux(Perms_Possiveis, Novas_Perms_Possiveis):-
     resolve_aux(Pre2_Novas_Perms_Possiveis, Novas_Perms_Possiveis).
 
 
+% 3.3.1  <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+%********************************************************************************
+% resolve(Puz)
+% Puz eh um puzzle, resolve esse puzzle, isto eh, apos a invocacao
+% deste predicado a grelha de Puz tem todas as variaveis substituídas
+% por numeros que respeitam as restricoes Puz.
+%********************************************************************************
+
+
+resolve(Puz):- 
+    inicializa(Puz, Perms_Possiveis),
+    resolve_aux(Perms_Possiveis,_).
