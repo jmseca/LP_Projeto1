@@ -693,3 +693,29 @@ escolhe_menos_alternativas(Perms_Possiveis, Escolha):-
     % pq so queremos o primeiro se houver mais que um
     !,
     nth1(Ind,Perms_Possiveis,Escolha).
+
+% 3.2.2  <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+%********************************************************************************
+% experimenta_perm(Escolha, Perms_Possiveis,Novas_Perms_Possiveis)
+% Perms_Possiveis eh uma lista de permutacoes possiveis, e Escolha 
+% eh um dos seus elementos (escolhido pelo predicado
+% escolhe_menos_alternativas)
+%
+% Este predicado segue os seguintes passos:
+% 1. Sendo Esp e Lst_Perms o espaço e a lista de permutações de Escolha,
+% respectivamente, escolhe uma permutacao de Lst_Perms, Perm. 
+% 2. Unifica Esp com Perm.
+% 3. Novas_Perms_Possiveis eh o resultado de substituir, em Perms_Possiveis, o
+% elemento Escolha pelo elemento [Esp, [Perm]].
+%********************************************************************************
+
+experimenta_perm(Escolha, Perms_Possiveis,Novas_Perms_Possiveis):-
+    append([L1,[Escolha],L2],Perms_Possiveis),
+    [Esp,Lst_Perms] = Escolha,
+    member(Perm,Lst_Perms),%!, se for só a primeira retiramos o Comment
+    Esp = Perm,
+    append([L1,[[Esp, [Perm]]],L2],Novas_Perms_Possiveis).
+    
+
+

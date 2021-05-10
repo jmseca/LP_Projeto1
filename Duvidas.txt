@@ -15,6 +15,11 @@ para nao o fazer tds os ciclos. Como podemos fazer isso.
 
 9. Podemos ter uma f/3 e dps fazemos f/5 pq precisamos de +2 e assim nao definimos outra funcao?
 
+10. No 3.2.2 eh preciso verificar se escolha eh escolha ou podemos assumir? Para alem disso, experimentamos com 
+todas ou só com a primeira?
+
+
+
 puzzle_publico(2, Puzzle),
 espacos_puzzle(Puzzle, Espacos),
 permutacoes_soma_espacos(Espacos, Perms_soma),

@@ -2,6 +2,7 @@
 
 2. Verificar nos que têm dois ou mais argumentos se nao unifica o input 
 
+3. Ver onde usamos termos e atomos e verificar se o uso e correto
 
 puzzle_publico(2, Puzzle),
 espacos_puzzle(Puzzle, Espacos),
@@ -19,3 +20,6 @@ L=[[[_200,_206],[[1,2],[2,1]]],
 [[_200,_248,_296],[[1,7,9],[1,9,7],[2,6,9],[2,7,8],[2,8,7],[2,9,6]]],
 [[_206,_254,7],[[1,2,7],[2,1,7]]]]
 
+== Import dos ficheiros
+working_directory(_,'c:/users/joaom/documents/ist/leic-a/1º ano/2º semestre/lp/projetos/lp_projeto1/src/').
+[projeto1].
