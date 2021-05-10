@@ -714,8 +714,37 @@ experimenta_perm(Escolha, Perms_Possiveis,Novas_Perms_Possiveis):-
     append([L1,[Escolha],L2],Perms_Possiveis),
     [Esp,Lst_Perms] = Escolha,
     member(Perm,Lst_Perms),%!, se for só a primeira retiramos o Comment
-    Esp = Perm,
+    Esp = Perm, %depois experimentar sem esta linha e fazer [Perm,[Perm]]
     append([L1,[[Esp, [Perm]]],L2],Novas_Perms_Possiveis).
+
+
+
+% 3.2.3  <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+%********************************************************************************
+% resolve_aux(Perms_Possiveis, Novas_Perms_Possiveis)
+% Perms_Possiveis eh uma lista de permutacoes possiveis.
+%
+% Significa que Novas_Perms_Possiveis eh o resultado de aplicar o algoritmo
+% descrito na Seccao 2.2, no enunciado, a Perms_Possiveis.
+%********************************************************************************
     
+resolve_aux(P, P):-
+    %ponderar ter funcao para isto, pq tambem usamos dois predicados acima
+    maplist(tamanho_sublistas,P,PreSize),
+    maplist(last,PreSize,Size),
+    writeln('SSSSSSSSSSSSSSSSSSSSSS'),
+    writeln(Size),
+    %verificar se ha pelo menos uma lista de perm com
+    % mais do que 1 perm
+    include(<(1),Size,Check),
+    Check == [].
+
+
+resolve_aux(Perms_Possiveis, Novas_Perms_Possiveis):-
+    escolhe_menos_alternativas(Perms_Possiveis, Escolha),
+    experimenta_perm(Escolha, Perms_Possiveis,Pre1_Novas_Perms_Possiveis),
+    simplifica(Pre1_Novas_Perms_Possiveis, Pre2_Novas_Perms_Possiveis),
+    resolve_aux(Pre2_Novas_Perms_Possiveis, Novas_Perms_Possiveis).
 
 
