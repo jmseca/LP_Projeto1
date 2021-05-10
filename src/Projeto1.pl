@@ -1,12 +1,12 @@
 :- [codigo_comum].
-:- [puzzles_publicos].
+
 
 % 3.1.1 <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
 %********************************************************************************
 % combinacoes_soma(N, Els, Soma, Combs)
 % N eh inteiro, Els eh uma lista de inteiros e Soma eh um inteiro.
-% Significa que Combs eh a lista ordenada cujos elementos são as 
+% Significa que Combs eh a lista ordenada cujos elementos sao as 
 % combinacoes N a N, dos elementos de Els cuja soma eh Soma.
 %
 % Sao usados 2 acumuladores:
@@ -86,7 +86,7 @@ insere_multi([H1|T1],L2,L3):-
 %********************************************************************************
 % permutacoes_soma(N, Els, Soma, Combs)
 % N eh inteiro, Els eh uma lista de inteiros e Soma eh um inteiro.
-% Significa que Perms eh a lista ordenada cujos elementos são as 
+% Significa que Perms eh a lista ordenada cujos elementos sao as 
 % permutacoes das combinacoes N a N, dos elementos de Els cuja soma eh Soma.
 %
 % Sao usados 2 acumuladores:
@@ -167,7 +167,7 @@ get_varnum([_|F],L,0):-
 % Fila eh uma fila (linha ou coluna) de um puzzle e H_V eh um
 % dos atomos h ou , conforme se trate de uma fila horizontal ou vertical,
 % respetivamente.
-% Esp eh um espaço de Fila, tal como descrito na Seccao 2.1, 
+% Esp eh um espaco de Fila, tal como descrito na Seccao 2.1, 
 % passo 1, no enunciado
 %********************************************************************************
 
@@ -307,7 +307,7 @@ permutacoes_soma_espacos([H1|E],P):-
 
 %---------------------------------------------------------------------------------
 % espaco_get_perms_soma(Esp,Perms_soma,Eperm)
-% Esp eh um Espaco e Perms_soma eh eh uma lista de listas tal como 
+% Esp eh um Espaco e Perms_soma eh uma lista de listas tal como 
 % obtido no predicado permutacoes_soma_espacos.
 % Significa que Eperm eh a lista de permutacoes de Perm_soma associada
 % ao espaco Esp.
@@ -337,7 +337,7 @@ muda_var(A,V,[H1|L1],Out):-
 % La eh uma lista de atomos, Lvar eh uma lista de variaveis e L1 eh uma lista
 % O tamanho de La eh igual ao de Lvar
 % Significa que L2 eh a lista  que resulta de substituir tds as 
-% ocorrencias variaveis de Lvar pelo seu atomo correspondente em La.
+% ocorrencias variaveis de Lvar em L1 pelo seu atomo correspondente em La.
 % --------------------------------------------------------------------------------
 muda_multi_var([H1|A],[H2|Var],L1,L2):-
     (A == [] ->
@@ -356,26 +356,39 @@ muda_multi_var([H1|A],[H2|Var],L1,L2):-
 %
 % Verifica se Perm1 eh uma permutacao valida para o espaco em estudo
 % --------------------------------------------------------------------------------
+
+permutacao_valida(_,_,[],_):-writeln('aqui?').
+
 permutacao_valida(Perm1,L1,[E1|Ecom],Psoma):-
-    %se fizermos uma a uma nem vai ser preciso o mmvar2, apenas o mmvar1
-    %writeln('-----------------'),
+    writeln('aqui2?'),
+    writeln('-----------------'),
+    writeln(2),
+    writeln(E1),
     E1 = espaco(_,Lcom),
-    %writeln(E1),
     %writeln(Perm1),
     %writeln(L1),
-    %writeln(Lcom),
+    writeln(Lcom),
+    writeln('Pre'),
     muda_multi_var(Perm1,L1,Lcom,Lnew),
     espaco_get_perms_soma(E1,Psoma,PermCom),
-    %writeln(Lnew),
-    %writeln(PermCom),
+    writeln(Lnew),
+    writeln(PermCom),
     %verificar se unifica com pelo menos uma permutacao
     include(subsumes_term(Lnew),PermCom,Ucheck), 
+    writeln(Ucheck),
     length(Ucheck,Size),
     Size>0,
-    %writeln('-----------------'),
-    (Ecom == []->
+    writeln('-----------------'),
+    /*(Ecom == []->
+        writeln('foi aqui?'),
         true;
-    permutacao_valida(Perm1,L1,Ecom,Psoma)).
+    writeln('======================='),
+    writeln(Perm1),
+    writeln(L1),
+    writeln(Ecom),
+    writeln(Psoma),
+    writeln('======================='),*/
+    permutacao_valida(Perm1,L1,Ecom,Psoma).
 
 
 
@@ -390,6 +403,9 @@ permutacao_valida(Perm1,L1,[E1|Ecom],Psoma):-
 %********************************************************************************
 
 permutacao_possivel_espaco(P,E,Eos,Psoma):-
+    %write(P),
+    %write(E),
+    %write(Eos),
     espacos_com_posicoes_comuns(Eos,E,Ecom),
     espaco_get_perms_soma(E,Psoma,Eperm),
     permutacao_possivel_espaco(P,E,Eos,Psoma,Ecom,Eperm).
@@ -398,8 +414,18 @@ permutacao_possivel_espaco([],_,_,_,_,[]).
 
 permutacao_possivel_espaco(P,E,Eos,Psoma,Ecom,[Perm1|Eperm]):-
     E = espaco(_,L1), %substituir isto no inicio (se der)
+    %writeln('trying Permutatio:'),
+    %writeln(Perm1),
+
+    %acho ja sei o erro,
+    % tenho se pensar que P ja eh uma permutacao valida,
+    % pq se for, a primeira que eu vou encontrar (Perm1) pode dar diferente
+    % e dps isso da false, em casos onde ate podia ser true
     (permutacao_valida(Perm1,L1,Ecom,Psoma) -> 
+        writeln('ola'),
+        writeln(Perm1),
         P = Perm1;
+    writeln('again'),
     permutacao_possivel_espaco(P,E,Eos,Psoma,Ecom,Eperm)).
     
 
@@ -412,9 +438,9 @@ permutacao_possivel_espaco(P,E,Eos,Psoma,Ecom,[Perm1|Eperm]):-
 % Psoma eh uma lista de listas tal como obtido 
 % no predicado permutacoes_soma_espacos.
 %
-% Significa que Pposs eh é uma lista de 2 elementos em que o primeiro é a
-% lista de variáveis de Esp e o segundo eh a lista ordenada de permutacoes 
-% possiveis para o espaço Esp, tal como descrito na Secção 2.1,
+% Significa que Pposs eh eh uma lista de 2 elementos em que o primeiro eh a
+% lista de variaveis de Esp e o segundo eh a lista ordenada de permutacoes 
+% possiveis para o espaco Esp, tal como descrito na Seccao 2.1,
 % passo 2 do enunciado
 %********************************************************************************
 
@@ -439,11 +465,11 @@ permutacoes_possiveis_espaco(Perm,E,Eos,Psoma,Ecom,[Perm1|Eperm]):-
 
 %---------------------------------------------------------------------------------
 % get_todas_perm_possiveis(Espacos,Psoma,Ppe)
-% Espacos eh uma lista de espaços, Psoma eh uma lista de listas tal como 
+% Espacos eh uma lista de espacos, Psoma eh uma lista de listas tal como 
 % obtido no predicado permutacoes_soma_espacos.
 %
-% Significa que Ppe eh a lista de permutações possíveis,
-% tal como descrito na Secção 2.1, no passo 2.
+% Significa que Ppe eh a lista de permutacoes possiveis,
+% tal como descrito na Seccao 2.1, no passo 2.
 % --------------------------------------------------------------------------------
 
 get_todas_perm_possiveis(Espacos,Psoma,Ppe):-
@@ -459,9 +485,9 @@ get_todas_perm_possiveis(Espacos,Psoma,[P1|Ppe],[E1|Espos]):-
 
 %********************************************************************************
 % permutacoes_possiveis_espacos(Espacos, Perms_poss_esps)
-% Espacos eh uma lista de espaços
-% Significa que Perms_poss_esps eh a lista de permutações possíveis,
-% tal como descrito na Secção 2.1, no passo 2.
+% Espacos eh uma lista de espacos
+% Significa que Perms_poss_esps eh a lista de permutacoes possiveis,
+% tal como descrito na Seccao 2.1, no passo 2.
 %********************************************************************************
 
 permutacoes_possiveis_espacos(Espacos, Perms_poss_esps):-
@@ -511,9 +537,9 @@ primeiro_el_igual(El1,[[El1|_]|L]):-
 
 %********************************************************************************
 % numeros_comuns(Lst_Perms, Numeros_comuns)
-% Lst_Perms é uma lista de permutações
-% Significa que Numeros_comuns é uma lista de pares (pos, numero),
-% significando que todas as listas de Lst_Perms contêm o número numero na posição
+% Lst_Perms eh uma lista de permutacoes
+% Significa que Numeros_comuns eh uma lista de pares (pos, numero),
+% significando que todas as listas de Lst_Perms contem o numero numero na posicao
 % pos.
 %********************************************************************************
 
@@ -539,7 +565,7 @@ numeros_comuns([[El1|Res1]|Res], Numeros_comuns,Min,N):-
     %O que esta em cima e necessario nos dois casos
     (primeiro_el_igual(El1,Res) ->
         numeros_comuns(NewRes, Nc2,Min,NewN),
-        append([[N,El1]],Nc2,Numeros_comuns);
+        append([(N,El1)],Nc2,Numeros_comuns);
     numeros_comuns(NewRes, Numeros_comuns,Min,NewN)).
     
 
@@ -561,23 +587,23 @@ unifica_indices(Lst,Numeros_comuns):-
 
 unifica_indices(_,[],_).
 
-unifica_indices([H1|Lst1],[[Ind,Val]|Numeros_comuns1],Ind):-
+unifica_indices([H1|Lst1],[(Ind,Val)|Numeros_comuns1],Ind):-
     H1 = Val,
     IndN is Ind+1,
     unifica_indices(Lst1,Numeros_comuns1,IndN).
 
     
-unifica_indices([_|Lst1],[[Ind1,Val]|Numeros_comuns1],Ind2):-
+unifica_indices([_|Lst1],[(Ind1,Val)|Numeros_comuns1],Ind2):-
     Ind1 =\= Ind2,
     IndN is Ind2+1,
-    unifica_indices(Lst1,[[Ind1,Val]|Numeros_comuns1],IndN).
+    unifica_indices(Lst1,[(Ind1,Val)|Numeros_comuns1],IndN).
 
 %********************************************************************************
 % atribui_comuns(Perms_Possiveis)
-% Perms_Possiveis é uma lista de permutações possíveis,
-% actualiza esta lista atribuindo a cada espaço números comuns
-% a todas as permutações possíveis para esse espaço, 
-% tal como descrito na Secção 2.1, no passo 3a
+% Perms_Possiveis eh uma lista de permutacoes possiveis,
+% actualiza esta lista atribuindo a cada espaco numeros comuns
+% a todas as permutacoes possiveis para esse espaco, 
+% tal como descrito na Seccao 2.1, no passo 3a
 %********************************************************************************
 
 %se chegar aqui, termina
@@ -656,9 +682,9 @@ simplifica(Perms1,Perms2, Novas_Perms_Possiveis):-
 
 %********************************************************************************
 % inicializa(Puzzle, Perms_Possiveis)
-% Puzzle é um puzzle
+% Puzzle eh um puzzle
 %
-% Significa que Perms_Possiveis eh a lista de permutações possiveis 
+% Significa que Perms_Possiveis eh a lista de permutacoes possiveis 
 % simplificada para Puzzle
 %********************************************************************************
 
@@ -675,9 +701,9 @@ inicializa(Puzzle, Perms_Possiveis):-
 % Perms_Possiveis eh uma lista de permutacoes possiveis 
 
 % Significa que Escolha eh o elemento de Perms_Possiveis escolhido segundo
-% o critério indicado na Secção 2.2, no passo 1 do enunciado.
+% o criterio indicado na Seccao 2.2, no passo 1 do enunciado.
 % Se todos os espacos em Perms_Possiveis tiverem associadas listas de
-% permutações unitarias, o predicado deve devolver "falso".
+% permutacoes unitarias, o predicado deve devolver "falso".
 %********************************************************************************
 
 escolhe_menos_alternativas(Perms_Possiveis, Escolha):-
@@ -703,7 +729,7 @@ escolhe_menos_alternativas(Perms_Possiveis, Escolha):-
 % escolhe_menos_alternativas)
 %
 % Este predicado segue os seguintes passos:
-% 1. Sendo Esp e Lst_Perms o espaço e a lista de permutações de Escolha,
+% 1. Sendo Esp e Lst_Perms o espaco e a lista de permutacoes de Escolha,
 % respectivamente, escolhe uma permutacao de Lst_Perms, Perm. 
 % 2. Unifica Esp com Perm.
 % 3. Novas_Perms_Possiveis eh o resultado de substituir, em Perms_Possiveis, o
@@ -713,7 +739,7 @@ escolhe_menos_alternativas(Perms_Possiveis, Escolha):-
 experimenta_perm(Escolha, Perms_Possiveis,Novas_Perms_Possiveis):-
     append([L1,[Escolha],L2],Perms_Possiveis),
     [Esp,Lst_Perms] = Escolha,
-    member(Perm,Lst_Perms),%!, se for só a primeira retiramos o Comment
+    member(Perm,Lst_Perms),%!, se for so a primeira retiramos o Comment
     Esp = Perm, %depois experimentar sem esta linha e fazer [Perm,[Perm]]
     append([L1,[[Esp, [Perm]]],L2],Novas_Perms_Possiveis).
 
@@ -751,7 +777,7 @@ resolve_aux(Perms_Possiveis, Novas_Perms_Possiveis):-
 %********************************************************************************
 % resolve(Puz)
 % Puz eh um puzzle, resolve esse puzzle, isto eh, apos a invocacao
-% deste predicado a grelha de Puz tem todas as variaveis substituídas
+% deste predicado a grelha de Puz tem todas as variaveis substituidas
 % por numeros que respeitam as restricoes Puz.
 %********************************************************************************
 

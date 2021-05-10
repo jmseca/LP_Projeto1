@@ -4,22 +4,24 @@
 
 3. Ver onde usamos termos e atomos e verificar se o uso e correto
 
-puzzle_publico(2, Puzzle),
-espacos_puzzle(Puzzle, Espacos),
-permutacoes_possiveis_espacos(Espacos, Perms_Possiveis),
-atribui_comuns(Perms_Possiveis),
-retira_impossiveis(Perms_Possiveis, Novas_Perms_Possiveis),
-maplist(writeln, Novas_Perms_Possiveis) 
 
-L=[[[_200,_206],[[1,2],[2,1]]],
-[[_236,1,_248,_254],[[7,1,2,6],[7,1,3,5],[7,1,5,3],[7,1,6,2],[8,1,2,5],[8,1,3,4],[8,1,4,3],[8,1,5,2],[9,1,2,4],[9,1,4,2]]],
-[[_284,2,_296,7],[[8,2,9,7],[9,2,8,7]]],
-[[9,8],[[9,8]]],
-[[_236,_284,9],[[7,8,9],[8,7,9]]],
-[[1,2,8],[[1,2,8]]],
-[[_200,_248,_296],[[1,7,9],[1,9,7],[2,6,9],[2,7,8],[2,8,7],[2,9,6]]],
-[[_206,_254,7],[[1,2,7],[2,1,7]]]]
+4. Corrigir:
+Espacos = [espaco(14,[_8,_14,_20,_26]),
+espaco(30,[_44,_50,_56,_62,_68]),
+espaco(14,[_86,_92]),
+espaco(4,[_110,_116]),
+espaco(11,[_134,_140]),
+espaco(9,[_158,_164]),
+espaco(19,[_182,_188,_194,_200,_206]),
+espaco(30,[_224,_230,_236,_242]),
+espaco(26,[_86,_134,_182,_224]),
+espaco(19,[_44,_92,_140,_188,_230]),
+espaco(10,[_8,_50]),
+espaco(13,[_194,_236]),
+espaco(3,[_14,_56]),
+espaco(11,[_200,_242])],
+permutacoes_soma_espacos(Espacos, Perms_soma),
+Perm = [6,1,4,3],
+E = espaco(14,[_8,_14,_20,_26]),
+permutacao_possivel_espaco(Perm, E, Espacos, Perms_soma)
 
-== Import dos ficheiros
-working_directory(_,'c:/users/joaom/documents/ist/leic-a/1º ano/2º semestre/lp/projetos/lp_projeto1/src/').
-[projeto1].
