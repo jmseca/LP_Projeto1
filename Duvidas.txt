@@ -28,4 +28,6 @@ writeln(2),
 nth1(4, Espacos, Esp),
 permutacao_possivel_espaco(Perm, Esp, Espacos, Perms_soma)
 
+working_directory(_,'c:/users/joaom/documents/ist/leic-a/1º ano/2º semestre/lp/projetos/lp_projeto1/src/').
+
 
