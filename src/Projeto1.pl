@@ -357,28 +357,28 @@ muda_multi_var([H1|A],[H2|Var],L1,L2):-
 % Verifica se Perm1 eh uma permutacao valida para o espaco em estudo
 % --------------------------------------------------------------------------------
 
-permutacao_valida(_,_,[],_):-writeln('aqui?').
+permutacao_valida(_,_,[],_).
 
 permutacao_valida(Perm1,L1,[E1|Ecom],Psoma):-
-    writeln('aqui2?'),
-    writeln('-----------------'),
-    writeln(2),
-    writeln(E1),
+    %writeln('aqui2?'),
+    %writeln('-----------------'),
+    %writeln(2),
+    %writeln(E1),
     E1 = espaco(_,Lcom),
     %writeln(Perm1),
     %writeln(L1),
-    writeln(Lcom),
-    writeln('Pre'),
+    %writeln(Lcom),
+    %writeln('Pre'),
     muda_multi_var(Perm1,L1,Lcom,Lnew),
     espaco_get_perms_soma(E1,Psoma,PermCom),
-    writeln(Lnew),
-    writeln(PermCom),
+    %writeln(Lnew),
+    %writeln(PermCom),
     %verificar se unifica com pelo menos uma permutacao
     include(subsumes_term(Lnew),PermCom,Ucheck), 
-    writeln(Ucheck),
+    %writeln(Ucheck),
     length(Ucheck,Size),
     Size>0,
-    writeln('-----------------'),
+    %writeln('-----------------'),
     /*(Ecom == []->
         writeln('foi aqui?'),
         true;
@@ -408,11 +408,11 @@ permutacao_possivel_espaco(P,E,Eos,Psoma):-
     %write(Eos),
     espacos_com_posicoes_comuns(Eos,E,Ecom),
     espaco_get_perms_soma(E,Psoma,Eperm),
-    permutacao_possivel_espaco(P,E,Eos,Psoma,Ecom,Eperm).
+    permutacao_possivel_espaco(P,E,Psoma,Ecom,Eperm).
 
 permutacao_possivel_espaco([],_,_,_,_,[]).
 
-permutacao_possivel_espaco(P,E,Eos,Psoma,Ecom,[Perm1|Eperm]):-
+permutacao_possivel_espaco(P,E,Psoma,Ecom,Eperm):-
     E = espaco(_,L1), %substituir isto no inicio (se der)
     %writeln('trying Permutatio:'),
     %writeln(Perm1),
@@ -421,12 +421,9 @@ permutacao_possivel_espaco(P,E,Eos,Psoma,Ecom,[Perm1|Eperm]):-
     % tenho se pensar que P ja eh uma permutacao valida,
     % pq se for, a primeira que eu vou encontrar (Perm1) pode dar diferente
     % e dps isso da false, em casos onde ate podia ser true
-    (permutacao_valida(Perm1,L1,Ecom,Psoma) -> 
-        writeln('ola'),
-        writeln(Perm1),
-        P = Perm1;
-    writeln('again'),
-    permutacao_possivel_espaco(P,E,Eos,Psoma,Ecom,Eperm)).
+    member(P,Eperm),
+    permutacao_valida(P,L1,Ecom,Psoma),!. %apenas queremos uma solucao, nao varias
+
     
 
 
