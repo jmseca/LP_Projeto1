@@ -1,148 +1,71 @@
+% Joao Fonseca 95749
+
 :- [codigo_comum].
 
-
 % 3.1.1 <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+%---------------------------------------------------------------------------------
+% sum_equal(N,L)
+% N eh um inteiro e L uma lista.
+%
+% Devolve true se N for a soma de todos os elementos da lista L, 
+% false caso contrario
+% --------------------------------------------------------------------------------
+
+sum_equal(N,L):-
+    sum_list(L,Size),
+    Size =:= N.
 
 %********************************************************************************
 % combinacoes_soma(N, Els, Soma, Combs)
 % N eh inteiro, Els eh uma lista de inteiros e Soma eh um inteiro.
+%
 % Significa que Combs eh a lista ordenada cujos elementos sao as 
 % combinacoes N a N, dos elementos de Els cuja soma eh Soma.
-%
-% Sao usados 2 acumuladores:
-%  1. Para guardar as combinacoes ja encontradas
-%  2. Guardar o numero de combinacoes repetidas durante o processo (o
-% que controla se a funcao continua ou nao)
 %********************************************************************************
-combinacoes_soma(N,E,S,C):-
-    combinacoes_soma(N,E,S,C,[],0).
 
-%Pq e q tenho de colocar isto aqui? (:-!.)
-%Nos outros programas ele nao devolve logo a afirmacao 
-%exemplo: funcos mais simples.
-combinacoes_soma(_,[],_,[[]],_,_):-!.
-combinacoes_soma(0,_,_,[[]],_,_):-!.
-combinacoes_soma(_,_,0,[[]],_,_):-!.
-combinacoes_soma(-1,_,_,[],_,_):-!.
-
-combinacoes_soma(Num,Els,Soma,Comb1,Acc1,Acc2):-
-    combinacao(Num,Els,NewC),
-    sum_list(NewC,Soma),
-    \+member(NewC,Acc1) ->
-        combinacoes_soma(Num,Els,Soma,Comb2,[NewC|Acc1],0),
-        append([NewC],Comb2,Comb1);
-
-    length(Acc1,Size),
-    Acc2 =:= Size ->
-        combinacoes_soma(-1,Els,Soma,Comb1,Acc1,Acc2);
-    
-    Acc2_1 is Acc2+1,
-    combinacoes_soma(Num,Els,Soma,Comb1,Acc1,Acc2_1).
-
+combinacoes_soma(N,Els,Soma,Combs):-
+    findall(X,combinacao(N,Els,X),PreCombs),
+    include(sum_equal(Soma),PreCombs,Combs).
 
 % 3.1.2  <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
 %---------------------------------------------------------------------------------
-% smaller(L1,L2)
-% L1 eh uma lista de inteiros, tal como L2 (ambas com o mesmo tamanho)
-% Verifica se o numero formado ao juntar os numeros de L1 eh menor
-% que o de L2.
+% findall_permutacoes(L1,L2)
+% L1 eh uma lista.
+% 
+% Significa que L2 eh a lista com todas as permutacoes de L1
 % --------------------------------------------------------------------------------
-smaller([],[]).
-smaller([H1|T1],[H2|T2]):-
-    H1 < H2 ->
-        smaller([],[]);
-    H1 =:= H2 ->
-        smaller(T1,T2).
+findall_permutacoes(L1,L2):-
+    findall(X,permutation(L1,X),L2).
 
-%---------------------------------------------------------------------------------
-% insere(L1,L2,L3)
-% L1 eh uma lista de inteiros, L2 e L3 sao listas de listas de inteiros
-% L3 resulta de adicionar L1 a L2, de modo a que fique ordenado segundo 
-% o criterio da funcao smaller.
-% --------------------------------------------------------------------------------
-
-insere(El1,[],[El1]):-!. %Se chegar aqui, nao queremos mais solucoes
-
-insere(El1,[H1|T1],[H2|T2]):-
-    smaller(El1,H1)->
-        H2=El1,
-        T2=[H1|T1];
-    insere(El1,T1,T2),
-    H2 = H1. 
-
-%---------------------------------------------------------------------------------
-% insere_multi(L1,L2,L3)
-% L1, L2 e L3 sao listas de listas de inteiros
-% L3 resulta de de fazer insere de todos as sublistas da lista L1 em L2
-% --------------------------------------------------------------------------------
-
-insere_multi([],L2,L2).
-
-insere_multi([H1|T1],L2,L3):-
-    insere_multi(T1,L2,L4),
-    insere(H1,L4,L3).
 
 %********************************************************************************
 % permutacoes_soma(N, Els, Soma, Combs)
 % N eh inteiro, Els eh uma lista de inteiros e Soma eh um inteiro.
+%
 % Significa que Perms eh a lista ordenada cujos elementos sao as 
 % permutacoes das combinacoes N a N, dos elementos de Els cuja soma eh Soma.
-%
-% Sao usados 2 acumuladores:
-%  1. Para guardar as combinacoes ja encontradas
-%  2. Guardar o numero de combinacoes repetidas durante o processo (o
-% que controla se a funcao continua ou nao)
 %********************************************************************************
-permutacoes_soma(N,E,S,C):-
-    permutacoes_soma(N,E,S,C,[],0).
-
-permutacoes_soma(_,[],_,[[]],_,_):-!.
-permutacoes_soma(0,_,_,[[]],_,_):-!.
-permutacoes_soma(_,_,0,[[]],_,_):-!.
-permutacoes_soma(-1,_,_,[],_,_):-!.
-
-permutacoes_soma(Num,Els,Soma,Comb1,Acc1,Acc2):-
-    combinacao(Num,Els,NewC),
-    sum_list(NewC,Soma),
-    \+member(NewC,Acc1) ->
-        findall(P,permutation(NewC,P),NewP),
-        permutacoes_soma(Num,Els,Soma,Comb2,[NewC|Acc1],0),
-        insere_multi(NewP,Comb2,Comb1);
-
-    length(Acc1,Size),
-    Acc2 =:= Size ->
-        permutacoes_soma(-1,Els,Soma,Comb1,Acc1,Acc2);
-    
-    Acc2_1 is Acc2+1,
-    permutacoes_soma(Num,Els,Soma,Comb1,Acc1,Acc2_1).
-
-
-
-
+permutacoes_soma(N,Els,Soma,Combs):-
+    combinacoes_soma(N,Els,Soma,PreComb1),
+    maplist(findall_permutacoes,PreComb1,PreComb2),
+    append(PreComb2,PreComb3),
+    sort(PreComb3,Combs).
 
 
 % 3.1.3  <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
 %---------------------------------------------------------------------------------
-% zeros(L)
-% true, se L for uma lista de zeros, false caso contrario
-% --------------------------------------------------------------------------------
-zeros([]).
-zeros([H|T]):-
-    H=:=0,
-    zeros(T).
-
-%---------------------------------------------------------------------------------
 % get_varnum(F,L)
-% Sendo F uma Fila,
+% F eh uma Fila.
+%
 % Significa que L e uma lista que contem as variaveis de um Espaco
 % e o par com os numeros que vao determinar a soma do Espaco, dependendo
 % se eh linha ou coluna
 % --------------------------------------------------------------------------------
 get_varnum(F,L):-
     get_varnum(F,L,0).
-
 
 get_varnum([],[],2).
 
@@ -155,7 +78,7 @@ get_varnum([H|F],L,C):-
 
 get_varnum([H|F],L,0):-
     nonvar(H),
-    \+zeros(H),
+    \+maplist(=:=(0),H),
     get_varnum(F,L2,1),
     append([H],L2,L).
 
@@ -167,7 +90,8 @@ get_varnum([_|F],L,0):-
 % Fila eh uma fila (linha ou coluna) de um puzzle e H_V eh um
 % dos atomos h ou , conforme se trate de uma fila horizontal ou vertical,
 % respetivamente.
-% Esp eh um espaco de Fila, tal como descrito na Seccao 2.1, 
+%
+% Significa que Esp eh um espaco de Fila, tal como descrito na Seccao 2.1, 
 % passo 1, no enunciado
 %********************************************************************************
 
@@ -186,6 +110,7 @@ espaco_fila(Fila, Esp , Hv):-
 % espacos_fila(Hv, Fila, Espacos)
 % Fila eh uma fila (linha ou coluna) de uma grelha e Hv eh 
 % um dos atomos h ou v. 
+%
 % Significa que Espacos eh a lista de todos os espacos de Fila, 
 % da esquerda para a direita 
 %********************************************************************************
@@ -196,27 +121,18 @@ espacos_fila(Hv,F,Esp):-
 
 % 3.1.5  <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
-%Como definir as fincoes (nos comentarios) se adicionarmos um parametro?? 
-
-%---------------------------------------------------------------------------------
-% nonvars(L)
-% true, se L for uma lista sem vars, false caso contrario
-% --------------------------------------------------------------------------------
-nonvars([]).
-nonvars([H|T]):-
-    nonvar(H),
-    nonvars(T).
-
 %********************************************************************************
 % espacos_puzzle(Puzzle, Espacos)
-% Puzzle eh a lista de espacos de Puzzle, tal como descrito na
-% Seccao 2.1, passo 1 do enunciado.
+% Puzzle eh um puzzle.
 %
-% .......
+% Significa que Espacos eh a lista de espacos de Puzzle, tal como descrito na
+% Seccao 2.1, passo 1 do enunciado.
 %********************************************************************************
 
-espacos_puzzle(P,E):-
-    espacos_puzzle(P,E,h,P).
+espacos_puzzle(Puzzle,Espacos):-
+    %Vamos passar dois Puzzles, para depois poder fazer
+    %a transposta
+    espacos_puzzle(Puzzle,Espacos,h,Puzzle).
 
 espacos_puzzle([],Esp,Hv,Pbase):-
     (Hv==h->
@@ -225,8 +141,7 @@ espacos_puzzle([],Esp,Hv,Pbase):-
     Esp=[]).
 
 espacos_puzzle([P1|P2],Esp,Hv,Pbase):-
-    %(maplist(nonvar,P1) -> isto dava aquele erro chato do __aux_maplist :(
-    (nonvars(P1) -> 
+    (maplist(nonvar,P1) -> 
         espacos_puzzle(P2,Esp,Hv,Pbase);
     espacos_fila(Hv,P1,NewP),
     espacos_puzzle(P2,Esp2,Hv,Pbase),
@@ -249,14 +164,13 @@ var_in_list(V,[H2|L2]):-
     
 %---------------------------------------------------------------------------------
 % vars_in_list(L1,L2)
-% L1 e L2 sao uma lista de variaveis
+% L1 e L2 sao listas de variaveis
 % Significa que ha pelo menos uma variavel comum entre L1 e L2
 % --------------------------------------------------------------------------------
 
 
 vars_in_list([H1|_],L2):-
-    var_in_list(H1,L2),
-    !. %ja foi encontrada uma var igual
+    var_in_list(H1,L2),!. %ja foi encontrada uma var igual
 
 vars_in_list([_|L1],L2):-
     vars_in_list(L1,L2).
@@ -280,7 +194,7 @@ espacos_com_posicoes_comuns([H|E],Esp,Ecom):-
     espaco(_,L2) = Esp,
     (vars_in_list(L1,L2)->
         espacos_com_posicoes_comuns(E,Esp,Ecom2),
-        append([H],Ecom2,Ecom); %ponderar passar isto para [H1|Ecom2] ou nao
+        Ecom = [H|Ecom2];
     espacos_com_posicoes_comuns(E,Esp,Ecom))).
 
 
@@ -320,30 +234,33 @@ espaco_get_perms_soma(E,[H|Psom],Eperm):-
 
 %---------------------------------------------------------------------------------
 % muda_var(A,Var,L1,L2)
-% A eh um atomo, Var uma variavel e L1 eh uma lista
+% A eh uma constante, Var uma variavel e L1 eh uma lista
+%
 % Significa que L2 eh a lista que resulta de substituir as variaveis Var 
 % da lista L1 para A
 % --------------------------------------------------------------------------------
-muda_var(_,_,[],[]):-!.
-muda_var(A,V,[H1|L1],Out):-
-    (V==H1 ->
-        muda_var(A,V,L1,Out2),
-        append([A],Out2,Out);
-    muda_var(A,V,L1,Out2),
-    append([H1],Out2,Out)).
+muda_var(_,_,[],[]).
+muda_var(A,Var,[H1|L1],L2):-
+    (Var==H1 ->
+        muda_var(A,Var,L1,PreL2),
+        append([A],PreL2,L2);
+    muda_var(A,Var,L1,PreL2),
+    append([H1],PreL2,L2)).
 
 %---------------------------------------------------------------------------------
 % muda_multi_var(La,Lvar,L1,L2)
-% La eh uma lista de atomos, Lvar eh uma lista de variaveis e L1 eh uma lista
+% La eh uma lista de constantes, Lvar eh uma lista de variaveis e L1 eh uma lista
 % O tamanho de La eh igual ao de Lvar
+%
 % Significa que L2 eh a lista  que resulta de substituir tds as 
-% ocorrencias variaveis de Lvar em L1 pelo seu atomo correspondente em La.
+% ocorrencias das variaveis de Lvar em L1 pela constante correspondente em La.
 % --------------------------------------------------------------------------------
-muda_multi_var([H1|A],[H2|Var],L1,L2):-
-    (A == [] ->
+
+muda_multi_var([H1|La],[H2|Lvar],L1,L2):-
+    (La == [] ->
         muda_var(H1,H2,L1,L2);
     muda_var(H1,H2,L1,L3),
-    muda_multi_var(A,Var,L3,L2)).
+    muda_multi_var(La,Lvar,L3,L2)).
 
 
 
@@ -495,24 +412,10 @@ permutacoes_possiveis_espacos(Espacos, Perms_poss_esps):-
 
 
 % 3.1.11  <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-
-%---------------------------------------------------------------------------------
-% tamanho_sublistas(L,Slist)
-% L eh uma lista de listas
-% Significa que Slist eh a lista com os tamanhos de cada sublista de L
-% --------------------------------------------------------------------------------
-
-tamanho_sublistas([],[]).
-
-tamanho_sublistas([L1|T],[S1|Sl]):-
-    length(L1,S1),
-    tamanho_sublistas(T,Sl).
-
-
 %---------------------------------------------------------------------------------
 % elimina_primeiros_el(L,L1)
 % L eh uma lista de listas
-% Significa que L1 eh retirando o primeiro elemento de cada sublista.
+% Significa que L1 eh L sem o primeiro elemento de cada sublista.
 % --------------------------------------------------------------------------------
 
 elimina_primeiros_el([],[]).
@@ -542,9 +445,7 @@ primeiro_el_igual(El1,[[El1|_]|L]):-
 
 numeros_comuns(Lst_Perms, Numeros_comuns):-
     %se houver permutacoes de tamanho diferente, temos o Size min
-    %mais um maplis a dar erro
-    %maplist(length,Lst_Perms,Size),
-    tamanho_sublistas(Lst_Perms,Size),
+    maplist(length,Lst_Perms,Size),
     min_member(Min,Size),
     numeros_comuns(Lst_Perms, Numeros_comuns,Min,1).
 
@@ -554,12 +455,10 @@ numeros_comuns(_, [],Min,Min_1):-
 
 numeros_comuns([[El1|Res1]|Res], Numeros_comuns,Min,N):-
     N =< Min,
-    %mais um maplis a dar erro
-    %maplist(elimina_primeiro_el,Res,PreNewRes),
     elimina_primeiros_el(Res,PreNewRes),
     append([Res1],PreNewRes,NewRes),
     NewN is N+1,
-    %O que esta em cima e necessario nos dois casos
+    %O que esta em cima e necessario nos dois casos abaixo
     (primeiro_el_igual(El1,Res) ->
         numeros_comuns(NewRes, Nc2,Min,NewN),
         append([(N,El1)],Nc2,Numeros_comuns);
@@ -618,7 +517,7 @@ atribui_comuns([P1|Perms_Possiveis1]):-
 
 %---------------------------------------------------------------------------------
 % retira_nao_unificaveis(Main,L1,L2)
-% Main eh uma lista de variaveis e atomos e L1 eh uma lista de listas
+% Main eh uma lista de variaveis e constantes e L1 eh uma lista de listas
 %
 % Significa que L2 eh a lista de listas que resulta de remover todas
 % as sublistas de L1 que nao unificam com Main
@@ -657,6 +556,7 @@ retira_impossiveis([[H1,Perm1]|Perms_Possiveis1], [[H1,Perm2]|Novas_Perms_Possiv
 %********************************************************************************
 % simplifica(Perms_Possiveis, Novas_Perms_Possiveis)
 % Perms_Possiveis eh uma lista de permutacoes possiveis
+%
 % Significa que Novas_Perms_Possiveis eh o resultado de 
 % simplificar Perms_Possiveis , ou seja, 
 % aplicando os predicados atribui_comuns e retira_impossiveis,
@@ -693,10 +593,22 @@ inicializa(Puzzle, Perms_Possiveis):-
 
 % 3.2.1  <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
+%---------------------------------------------------------------------------------
+% tamanho_sublistas(L,Slist)
+% L eh uma lista de listas
+% Significa que Slist eh a lista com os tamanhos de cada sublista de L
+% --------------------------------------------------------------------------------
+
+tamanho_sublistas([],[]).
+
+tamanho_sublistas([L1|T],[S1|Sl]):-
+    length(L1,S1),
+    tamanho_sublistas(T,Sl).
+
 %********************************************************************************
 % escolhe_menos_alternativas(Perms_Possiveis, Escolha)
 % Perms_Possiveis eh uma lista de permutacoes possiveis 
-
+%
 % Significa que Escolha eh o elemento de Perms_Possiveis escolhido segundo
 % o criterio indicado na Seccao 2.2, no passo 1 do enunciado.
 % Se todos os espacos em Perms_Possiveis tiverem associadas listas de
@@ -736,7 +648,7 @@ escolhe_menos_alternativas(Perms_Possiveis, Escolha):-
 experimenta_perm(Escolha, Perms_Possiveis,Novas_Perms_Possiveis):-
     append([L1,[Escolha],L2],Perms_Possiveis),
     [Esp,Lst_Perms] = Escolha,
-    member(Perm,Lst_Perms),%!, se for so a primeira retiramos o Comment
+    member(Perm,Lst_Perms),
     Esp = Perm, %depois experimentar sem esta linha e fazer [Perm,[Perm]]
     append([L1,[[Esp, [Perm]]],L2],Novas_Perms_Possiveis).
 
@@ -773,7 +685,9 @@ resolve_aux(Perms_Possiveis, Novas_Perms_Possiveis):-
 
 %********************************************************************************
 % resolve(Puz)
-% Puz eh um puzzle, resolve esse puzzle, isto eh, apos a invocacao
+% Puz eh um puzzle
+%
+% Resolve esse puzzle, isto eh, apos a invocacao
 % deste predicado a grelha de Puz tem todas as variaveis substituidas
 % por numeros que respeitam as restricoes Puz.
 %********************************************************************************
