@@ -1,29 +1,25 @@
 
 :- [codigo_comum].
 
+%---------------------------------------------------------------------------------
+% findall_permutacoes(L1,L2)
+% L1 eh uma lista.
+% 
+% Significa que L2 eh a lista com todas as permutacoes de L1
+% --------------------------------------------------------------------------------
+findall_permutacoes(L1,L2):-
+    findall(X,permutation(L1,X),L2).
 
-sum_equal(N,L):-
-    sum_list(L,Size),
-    Size =:= N.
 
 %********************************************************************************
-% combinacoes_soma(N, Els, Soma, Combs)
+% permutacoes_soma(N, Els, Soma, Combs)
 % N eh inteiro, Els eh uma lista de inteiros e Soma eh um inteiro.
-% Significa que Combs eh a lista ordenada cujos elementos sao as 
-% combinacoes N a N, dos elementos de Els cuja soma eh Soma.
 %
-% Sao usados 2 acumuladores:
-%  1. Para guardar as combinacoes ja encontradas
-%  2. Guardar o numero de combinacoes repetidas durante o processo (o
-% que controla se a funcao continua ou nao)
+% Significa que Perms eh a lista ordenada cujos elementos sao as 
+% permutacoes das combinacoes N a N, dos elementos de Els cuja soma eh Soma.
 %********************************************************************************
-combinacoes_somaz(N,Els,Soma,Combs):-
-    findall(X,combinacao(N,Els,X),PreCombs),
-    include(sum_equal(Soma),PreCombs,Combs).
-
-%combinacoes_somaz(N,Els,Soma,[C1|Comb1],Acc):-
-%    combinacao(N,Els,C1),
-%    sum_list(C1,Soma),
-%    \+member(C1,Acc),
-%    writeln(C1),
-%    combinacoes_somaz(N,Els,Soma,Comb1,[C1|Acc]).
+permutacoes_soma(N,Els,Soma,Combs):-
+    combinacoes_soma(N,Els,Soma,PreComb1),
+    maplist(findall_permutacoes,PreComb1,PreComb2),
+    append(PreComb2,PreComb3)
+    sort(PreComb3,Combs).
