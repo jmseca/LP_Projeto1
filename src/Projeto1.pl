@@ -277,34 +277,12 @@ muda_multi_var([H1|La],[H2|Lvar],L1,L2):-
 permutacao_valida(_,_,[],_).
 
 permutacao_valida(Perm1,L1,[E1|Ecom],Psoma):-
-    %writeln('aqui2?'),
-    %writeln('-----------------'),
-    %writeln(2),
-    %writeln(E1),
     E1 = espaco(_,Lcom),
-    %writeln(Perm1),
-    %writeln(L1),
-    %writeln(Lcom),
-    %writeln('Pre'),
     muda_multi_var(Perm1,L1,Lcom,Lnew),
     espaco_get_perms_soma(E1,Psoma,PermCom),
-    %writeln(Lnew),
-    %writeln(PermCom),
-    %verificar se unifica com pelo menos uma permutacao
     include(subsumes_term(Lnew),PermCom,Ucheck), 
-    %writeln(Ucheck),
     length(Ucheck,Size),
     Size>0,
-    %writeln('-----------------'),
-    /*(Ecom == []->
-        writeln('foi aqui?'),
-        true;
-    writeln('======================='),
-    writeln(Perm1),
-    writeln(L1),
-    writeln(Ecom),
-    writeln(Psoma),
-    writeln('======================='),*/
     permutacao_valida(Perm1,L1,Ecom,Psoma).
 
 
@@ -315,31 +293,18 @@ permutacao_valida(Perm1,L1,[E1|Ecom],Psoma):-
 % Perm eh uma permutacao, Esp eh um espaco, Espacos eh uma
 % lista de espacos e Perms_soma eh uma lista de listas tal como 
 % obtido no predicado permutacoes_soma_espacos.
+%
 % Significa que Perm eh uma permutacao possivel para o espaco Esp,
 % tal como descrito na Seccao 2.1, passo 2 do enunciado
 %********************************************************************************
 
 permutacao_possivel_espaco(P,E,Eos,Psoma):-
-    %write(P),
-    %write(E),
-    %write(Eos),
     espacos_com_posicoes_comuns(Eos,E,Ecom),
     espaco_get_perms_soma(E,Psoma,Eperm),
-    permutacao_possivel_espaco(P,E,Psoma,Ecom,Eperm).
-
-permutacao_possivel_espaco([],_,_,_,_,[]).
-
-permutacao_possivel_espaco(P,E,Psoma,Ecom,Eperm):-
-    E = espaco(_,L1), %substituir isto no inicio (se der)
-    %writeln('trying Permutatio:'),
-    %writeln(Perm1),
-
-    %acho ja sei o erro,
-    % tenho se pensar que P ja eh uma permutacao valida,
-    % pq se for, a primeira que eu vou encontrar (Perm1) pode dar diferente
-    % e dps isso da false, em casos onde ate podia ser true
+    %permutacao_possivel_espaco(P,E,Psoma,Ecom,Eperm),
+    E = espaco(_,L1), 
     member(P,Eperm),
-    permutacao_valida(P,L1,Ecom,Psoma),!. %apenas queremos uma solucao, nao varias
+    permutacao_valida(P,L1,Ecom,Psoma).%,!. %apenas queremos uma solucao, nao varias
 
     
 
@@ -358,22 +323,22 @@ permutacao_possivel_espaco(P,E,Psoma,Ecom,Eperm):-
 % passo 2 do enunciado
 %********************************************************************************
 
-%permutacoes_possiveis_espaco(Eos,Psoma,E,[EL|[PermL]]):-
 permutacoes_possiveis_espaco(Eos,Psoma,E,Pposs):-
     E = espaco(_,ELst),
-    espacos_com_posicoes_comuns(Eos,E,Ecom),
-    espaco_get_perms_soma(E,Psoma,Eperm),
-    permutacoes_possiveis_espaco(PermL,E,Eos,Psoma,Ecom,Eperm),
+    findall(X,permutacao_possivel_espaco(X,E,Eos,Psoma),PermL),
+    %espacos_com_posicoes_comuns(Eos,E,Ecom),
+    %espaco_get_perms_soma(E,Psoma,Eperm),
+    %permutacoes_possiveis_espaco(PermL,E,Eos,Psoma,Ecom,Eperm),
     Pposs = [ELst,PermL].
 
-permutacoes_possiveis_espaco([],_,_,_,_,[]).
+%permutacoes_possiveis_espaco([],_,_,_,_,[]).
 
-permutacoes_possiveis_espaco(Perm,E,Eos,Psoma,Ecom,[Perm1|Eperm]):-
-    E = espaco(_,L1), %substituir isto no inicio (se der)
-    (permutacao_valida(Perm1,L1,Ecom,Psoma)->
-        permutacoes_possiveis_espaco(Perm2,E,Eos,Psoma,Ecom,Eperm),
-        append([Perm1],Perm2,Perm);
-    permutacoes_possiveis_espaco(Perm,E,Eos,Psoma,Ecom,Eperm)).
+%permutacoes_possiveis_espaco(Perm,E,Eos,Psoma,Ecom,[Perm1|Eperm]):-
+    %E = espaco(_,L1), %substituir isto no inicio (se der)
+    %(permutacao_valida(Perm1,L1,Ecom,Psoma)->
+    %    permutacoes_possiveis_espaco(Perm2,E,Eos,Psoma,Ecom,Eperm),
+    %    append([Perm1],Perm2,Perm);
+    %permutacoes_possiveis_espaco(Perm,E,Eos,Psoma,Ecom,Eperm)).
 
 % 3.1.10  <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
@@ -400,15 +365,16 @@ get_todas_perm_possiveis(Espacos,Psoma,[P1|Ppe],[E1|Espos]):-
 %********************************************************************************
 % permutacoes_possiveis_espacos(Espacos, Perms_poss_esps)
 % Espacos eh uma lista de espacos
+%
 % Significa que Perms_poss_esps eh a lista de permutacoes possiveis,
 % tal como descrito na Seccao 2.1, no passo 2.
 %********************************************************************************
 
 permutacoes_possiveis_espacos(Espacos, Perms_poss_esps):-
     permutacoes_soma_espacos(Espacos,Psoma),
-    %maplist(permutacoes_possiveis_espaco(Espacos, Psoma),Espacos,Perms_poss_esps).
+    maplist(permutacoes_possiveis_espaco(Espacos, Psoma),Espacos,Perms_poss_esps).
     %falhar again
-    get_todas_perm_possiveis(Espacos,Psoma,Perms_poss_esps).
+    %get_todas_perm_possiveis(Espacos,Psoma,Perms_poss_esps).
 
 
 % 3.1.11  <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
@@ -450,8 +416,7 @@ numeros_comuns(Lst_Perms, Numeros_comuns):-
     numeros_comuns(Lst_Perms, Numeros_comuns,Min,1).
 
 numeros_comuns(_, [],Min,Min_1):-
-    Min_1 is Min+1,!. 
-    %evitar o false final
+    Min_1 is Min+1. 
 
 numeros_comuns([[El1|Res1]|Res], Numeros_comuns,Min,N):-
     N =< Min,
@@ -503,7 +468,7 @@ unifica_indices([_|Lst1],[(Ind1,Val)|Numeros_comuns1],Ind2):-
 %********************************************************************************
 
 %se chegar aqui, termina
-atribui_comuns([]):-!. 
+atribui_comuns([]). 
 
 atribui_comuns([P1|Perms_Possiveis1]):-
     P1 = [Lst,Perms],
@@ -523,8 +488,8 @@ atribui_comuns([P1|Perms_Possiveis1]):-
 % as sublistas de L1 que nao unificam com Main
 % --------------------------------------------------------------------------------
 
-%se chegar aqui termina
-retira_nao_unificaveis(_,[],[]):-!.
+
+retira_nao_unificaveis(_,[],[]).
 
 retira_nao_unificaveis(Main,[H1|L1],L2):-
     (subsumes_term(Main,H1) ->
@@ -605,6 +570,18 @@ tamanho_sublistas([L1|T],[S1|Sl]):-
     length(L1,S1),
     tamanho_sublistas(T,Sl).
 
+%---------------------------------------------------------------------------------
+% tamanho_permutacoes(Perms,PermSize)
+% Perms eh uma lista de permutacoes
+%
+% Significa que PermSize eh uma lista com os tamanhos de cada permutacao
+% --------------------------------------------------------------------------------
+
+tamanho_permutacoes(Perms_Possiveis,PermSize):-
+    maplist(tamanho_sublistas,Perms_Possiveis,PreSize),
+    maplist(last,PreSize,PermSize).
+
+
 %********************************************************************************
 % escolhe_menos_alternativas(Perms_Possiveis, Escolha)
 % Perms_Possiveis eh uma lista de permutacoes possiveis 
@@ -616,8 +593,7 @@ tamanho_sublistas([L1|T],[S1|Sl]):-
 %********************************************************************************
 
 escolhe_menos_alternativas(Perms_Possiveis, Escolha):-
-    maplist(tamanho_sublistas,Perms_Possiveis,PreSize),
-    maplist(last,PreSize,Size),
+    tamanho_permutacoes(Perms_Possiveis,Size),
     %verificar se ha pelo menos uma lista de perm com
     % mais do que 1 perm
     include(<(1),Size,Check),
@@ -665,9 +641,7 @@ experimenta_perm(Escolha, Perms_Possiveis,Novas_Perms_Possiveis):-
 %********************************************************************************
     
 resolve_aux(P, P):-
-    %ponderar ter funcao para isto, pq tambem usamos dois predicados acima
-    maplist(tamanho_sublistas,P,PreSize),
-    maplist(last,PreSize,Size),
+    tamanho_permutacoes(P,Size),
     %verificar se ha pelo menos uma lista de perm com
     % mais do que 1 perm
     include(<(1),Size,Check),
