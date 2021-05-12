@@ -301,11 +301,9 @@ permutacao_valida(Perm1,L1,[E1|Ecom],Psoma):-
 permutacao_possivel_espaco(P,E,Eos,Psoma):-
     espacos_com_posicoes_comuns(Eos,E,Ecom),
     espaco_get_perms_soma(E,Psoma,Eperm),
-    %permutacao_possivel_espaco(P,E,Psoma,Ecom,Eperm),
     E = espaco(_,L1), 
     member(P,Eperm),
-    permutacao_valida(P,L1,Ecom,Psoma).%,!. %apenas queremos uma solucao, nao varias
-
+    permutacao_valida(P,L1,Ecom,Psoma).
     
 
 
@@ -326,19 +324,7 @@ permutacao_possivel_espaco(P,E,Eos,Psoma):-
 permutacoes_possiveis_espaco(Eos,Psoma,E,Pposs):-
     E = espaco(_,ELst),
     findall(X,permutacao_possivel_espaco(X,E,Eos,Psoma),PermL),
-    %espacos_com_posicoes_comuns(Eos,E,Ecom),
-    %espaco_get_perms_soma(E,Psoma,Eperm),
-    %permutacoes_possiveis_espaco(PermL,E,Eos,Psoma,Ecom,Eperm),
     Pposs = [ELst,PermL].
-
-%permutacoes_possiveis_espaco([],_,_,_,_,[]).
-
-%permutacoes_possiveis_espaco(Perm,E,Eos,Psoma,Ecom,[Perm1|Eperm]):-
-    %E = espaco(_,L1), %substituir isto no inicio (se der)
-    %(permutacao_valida(Perm1,L1,Ecom,Psoma)->
-    %    permutacoes_possiveis_espaco(Perm2,E,Eos,Psoma,Ecom,Eperm),
-    %    append([Perm1],Perm2,Perm);
-    %permutacoes_possiveis_espaco(Perm,E,Eos,Psoma,Ecom,Eperm)).
 
 % 3.1.10  <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
@@ -373,9 +359,7 @@ get_todas_perm_possiveis(Espacos,Psoma,[P1|Ppe],[E1|Espos]):-
 permutacoes_possiveis_espacos(Espacos, Perms_poss_esps):-
     permutacoes_soma_espacos(Espacos,Psoma),
     maplist(permutacoes_possiveis_espaco(Espacos, Psoma),Espacos,Perms_poss_esps).
-    %falhar again
-    %get_todas_perm_possiveis(Espacos,Psoma,Perms_poss_esps).
-
+    
 
 % 3.1.11  <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 %---------------------------------------------------------------------------------
@@ -467,7 +451,6 @@ unifica_indices([_|Lst1],[(Ind1,Val)|Numeros_comuns1],Ind2):-
 % tal como descrito na Seccao 2.1, no passo 3a
 %********************************************************************************
 
-%se chegar aqui, termina
 atribui_comuns([]). 
 
 atribui_comuns([P1|Perms_Possiveis1]):-
@@ -475,8 +458,6 @@ atribui_comuns([P1|Perms_Possiveis1]):-
     numeros_comuns(Perms, Numeros_comuns),
     unifica_indices(Lst,Numeros_comuns),
     atribui_comuns(Perms_Possiveis1).
-
-
 
 % 3.1.13  <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
@@ -561,6 +542,7 @@ inicializa(Puzzle, Perms_Possiveis):-
 %---------------------------------------------------------------------------------
 % tamanho_sublistas(L,Slist)
 % L eh uma lista de listas
+%
 % Significa que Slist eh a lista com os tamanhos de cada sublista de L
 % --------------------------------------------------------------------------------
 
@@ -625,7 +607,7 @@ experimenta_perm(Escolha, Perms_Possiveis,Novas_Perms_Possiveis):-
     append([L1,[Escolha],L2],Perms_Possiveis),
     [Esp,Lst_Perms] = Escolha,
     member(Perm,Lst_Perms),
-    Esp = Perm, %depois experimentar sem esta linha e fazer [Perm,[Perm]]
+    Esp = Perm, 
     append([L1,[[Esp, [Perm]]],L2],Novas_Perms_Possiveis).
 
 
@@ -642,7 +624,7 @@ experimenta_perm(Escolha, Perms_Possiveis,Novas_Perms_Possiveis):-
     
 resolve_aux(P, P):-
     tamanho_permutacoes(P,Size),
-    %verificar se ha pelo menos uma lista de perm com
+    %verificar se nao ha listas de perm com
     % mais do que 1 perm
     include(<(1),Size,Check),
     Check == [].
