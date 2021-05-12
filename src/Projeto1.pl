@@ -1,4 +1,4 @@
-% João Fonseca 95749
+% Joao Fonseca 95749
 
 :- [codigo_comum].
 
@@ -58,7 +58,8 @@ permutacoes_soma(N,Els,Soma,Combs):-
 
 %---------------------------------------------------------------------------------
 % get_varnum(F,L)
-% Sendo F uma Fila,
+% F eh uma Fila.
+%
 % Significa que L e uma lista que contem as variaveis de um Espaco
 % e o par com os numeros que vao determinar a soma do Espaco, dependendo
 % se eh linha ou coluna
@@ -89,7 +90,8 @@ get_varnum([_|F],L,0):-
 % Fila eh uma fila (linha ou coluna) de um puzzle e H_V eh um
 % dos atomos h ou , conforme se trate de uma fila horizontal ou vertical,
 % respetivamente.
-% Esp eh um espaco de Fila, tal como descrito na Seccao 2.1, 
+%
+% Significa que Esp eh um espaco de Fila, tal como descrito na Seccao 2.1, 
 % passo 1, no enunciado
 %********************************************************************************
 
@@ -123,12 +125,14 @@ espacos_fila(Hv,F,Esp):-
 % espacos_puzzle(Puzzle, Espacos)
 % Puzzle eh um puzzle.
 %
-% Significa que Espcos eh a lista de espacos de Puzzle, tal como descrito na
+% Significa que Espacos eh a lista de espacos de Puzzle, tal como descrito na
 % Seccao 2.1, passo 1 do enunciado.
 %********************************************************************************
 
-espacos_puzzle(P,E):-
-    espacos_puzzle(P,E,h,P).
+espacos_puzzle(Puzzle,Espacos):-
+    %Vamos passar dois Puzzles, para depois poder fazer
+    %a transposta
+    espacos_puzzle(Puzzle,Espacos,h,Puzzle).
 
 espacos_puzzle([],Esp,Hv,Pbase):-
     (Hv==h->
@@ -231,29 +235,32 @@ espaco_get_perms_soma(E,[H|Psom],Eperm):-
 %---------------------------------------------------------------------------------
 % muda_var(A,Var,L1,L2)
 % A eh uma constante, Var uma variavel e L1 eh uma lista
+%
 % Significa que L2 eh a lista que resulta de substituir as variaveis Var 
 % da lista L1 para A
 % --------------------------------------------------------------------------------
-muda_var(_,_,[],[]):-!.
-muda_var(A,V,[H1|L1],Out):-
-    (V==H1 ->
-        muda_var(A,V,L1,Out2),
-        append([A],Out2,Out);
-    muda_var(A,V,L1,Out2),
-    append([H1],Out2,Out)).
+muda_var(_,_,[],[]).
+muda_var(A,Var,[H1|L1],L2):-
+    (Var==H1 ->
+        muda_var(A,Var,L1,PreL2),
+        append([A],PreL2,L2);
+    muda_var(A,Var,L1,PreL2),
+    append([H1],PreL2,L2)).
 
 %---------------------------------------------------------------------------------
 % muda_multi_var(La,Lvar,L1,L2)
 % La eh uma lista de constantes, Lvar eh uma lista de variaveis e L1 eh uma lista
 % O tamanho de La eh igual ao de Lvar
+%
 % Significa que L2 eh a lista  que resulta de substituir tds as 
 % ocorrencias das variaveis de Lvar em L1 pela constante correspondente em La.
 % --------------------------------------------------------------------------------
-muda_multi_var([H1|A],[H2|Var],L1,L2):-
-    (A == [] ->
+
+muda_multi_var([H1|La],[H2|Lvar],L1,L2):-
+    (La == [] ->
         muda_var(H1,H2,L1,L2);
     muda_var(H1,H2,L1,L3),
-    muda_multi_var(A,Var,L3,L2)).
+    muda_multi_var(La,Lvar,L3,L2)).
 
 
 
