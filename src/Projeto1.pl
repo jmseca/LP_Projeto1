@@ -95,10 +95,10 @@ get_varnum([_|F],L,0):-
 % passo 1, no enunciado
 %********************************************************************************
 
-espaco_fila(Fila, Esp , Hv):-
+espaco_fila(Fila, Esp , H_V):-
     get_varnum(Fila,Vnum),
     Vnum = [[E1,E2]|L],
-    (Hv==h -> 
+    (H_V==h -> 
         Esp = espaco(E2,L);
     Esp = espaco(E1,L)).
 
@@ -115,8 +115,8 @@ espaco_fila(Fila, Esp , Hv):-
 % da esquerda para a direita 
 %********************************************************************************
 
-espacos_fila(Hv,F,Esp):-
-    bagof(X,espaco_fila(F,X,Hv),Esp).
+espacos_fila(Hv,Fila,Espacos):-
+    bagof(X,espaco_fila(Fila,X,Hv),Espacos).
 
 
 % 3.1.5  <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
@@ -178,55 +178,55 @@ vars_in_list([_|L1],L2):-
 
 
 %********************************************************************************
-% espacos_com_posicoes_comuns(Espacos,Esp,Esps_com)
+% espacos_com_posicoes_comuns(Espacos,Esp,Ecom)
 % Espacoes eh uma lista de espacos e Esp eh um espaco.
-% Significa que Esps_com eh a lista de espacos com variaveis em
+% Significa que Ecom eh a lista de espacos com variaveis em
 % comum com Esp, exceptuando Esp.
 % 
 %********************************************************************************
 
 espacos_com_posicoes_comuns([],_,[]).
 
-espacos_com_posicoes_comuns([H|E],Esp,Ecom):-
+espacos_com_posicoes_comuns([H|Espacos],Esp,Ecom):-
     (H == Esp ->
-        espacos_com_posicoes_comuns(E,Esp,Ecom);
+        espacos_com_posicoes_comuns(Espacos,Esp,Ecom);
     espaco(_,L1) = H,
     espaco(_,L2) = Esp,
     (vars_in_list(L1,L2)->
-        espacos_com_posicoes_comuns(E,Esp,Ecom2),
+        espacos_com_posicoes_comuns(Espacos,Esp,Ecom2),
         Ecom = [H|Ecom2];
-    espacos_com_posicoes_comuns(E,Esp,Ecom))).
+    espacos_com_posicoes_comuns(Espacos,Esp,Ecom))).
 
 
 % 3.1.7  <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
 %********************************************************************************
-% permutacoes_soma_espacos(Espacos,Perms_soma)
+% permutacoes_soma_espacos(Espacos,Psoma)
 % Espacos eh uma lista de espacos.
-% Significa que Perms_soma eh a lista de listas de 2 elementos, em que
+% Significa que Psoma eh a lista de listas de 2 elementos, em que
 % o 1o elemento eh um espaco de Espacos e o 2o eh a lista ordenada
 % de permutacoes cuja soma eh igual a soma do espaco
 %********************************************************************************
 
 permutacoes_soma_espacos([],[]).
 
-permutacoes_soma_espacos([H1|E],P):-
+permutacoes_soma_espacos([H1|Espacos],Psoma):-
     espaco(Soma,Vars) = H1,
     length(Vars,N),
     permutacoes_soma(N,[1,2,3,4,5,6,7,8,9],Soma,Perms),
-    permutacoes_soma_espacos(E,P2),
-    append([[H1,Perms]],P2,P).
+    permutacoes_soma_espacos(Espacos,P2),
+    append([[H1,Perms]],P2,Psoma).
 
 % 3.1.8  <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
 %---------------------------------------------------------------------------------
-% espaco_get_perms_soma(Esp,Perms_soma,Eperm)
+% espaco_get_perms_soma(Esp,Psoma,Eperm)
 % Esp eh um Espaco e Perms_soma eh uma lista de listas tal como 
 % obtido no predicado permutacoes_soma_espacos.
 % Significa que Eperm eh a lista de permutacoes de Perm_soma associada
 % ao espaco Esp.
 % --------------------------------------------------------------------------------
-espaco_get_perms_soma(E,[H|Psom],Eperm):-
+espaco_get_perms_soma(Esp,[H|Psoma],Eperm):-
     H = [Esp2,Perms],
     (Esp2 == E ->
         Eperm = Perms;
@@ -289,21 +289,21 @@ permutacao_valida(Perm1,L1,[E1|Ecom],Psoma):-
 
 
 %********************************************************************************
-% permutacao_possivel_espaco(Perm,Esp,Espacos,Perms_soma)
+% permutacao_possivel_espaco(Perm,Esp,Espacos,Psoma)
 % Perm eh uma permutacao, Esp eh um espaco, Espacos eh uma
-% lista de espacos e Perms_soma eh uma lista de listas tal como 
+% lista de espacos e Psoma eh uma lista de listas tal como 
 % obtido no predicado permutacoes_soma_espacos.
 %
 % Significa que Perm eh uma permutacao possivel para o espaco Esp,
 % tal como descrito na Seccao 2.1, passo 2 do enunciado
 %********************************************************************************
 
-permutacao_possivel_espaco(P,E,Eos,Psoma):-
-    espacos_com_posicoes_comuns(Eos,E,Ecom),
-    espaco_get_perms_soma(E,Psoma,Eperm),
+permutacao_possivel_espaco(Perm,Esp,Espacos,Psoma):-
+    espacos_com_posicoes_comuns(Espacos,Esp,Ecom),
+    espaco_get_perms_soma(Esp,Psoma,Eperm),
     E = espaco(_,L1), 
-    member(P,Eperm),
-    permutacao_valida(P,L1,Ecom,Psoma).
+    member(Perm,Eperm),
+    permutacao_valida(Perm,L1,Ecom,Psoma).
     
 
 
@@ -321,9 +321,9 @@ permutacao_possivel_espaco(P,E,Eos,Psoma):-
 % passo 2 do enunciado
 %********************************************************************************
 
-permutacoes_possiveis_espaco(Eos,Psoma,E,Pposs):-
-    E = espaco(_,ELst),
-    findall(X,permutacao_possivel_espaco(X,E,Eos,Psoma),PermL),
+permutacoes_possiveis_espaco(Espacos,Psoma,Esp,Pposs):-
+    Esp = espaco(_,ELst),
+    findall(X,permutacao_possivel_espaco(X,Esp,Espacos,Psoma),PermL),
     Pposs = [ELst,PermL].
 
 % 3.1.10  <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
@@ -471,9 +471,9 @@ retira_nao_unificaveis(Main,[H1|L1],L2):-
 
 retira_impossiveis([], []).
 
-retira_impossiveis([[H1,Perm1]|Perms_Possiveis1], [[H1,Perm2]|Novas_Perms_Possiveis1]):-
+retira_impossiveis([[H1,Perm1]|Perms_Possiveis], [[H1,Perm2]|Novas_Perms_Possiveis]):-
     retira_nao_unificaveis(H1,Perm1,Perm2),
-    retira_impossiveis(Perms_Possiveis1,Novas_Perms_Possiveis1).
+    retira_impossiveis(Perms_Possiveis,Novas_Perms_Possiveis).
     
 
 
@@ -528,9 +528,9 @@ inicializa(Puzzle, Perms_Possiveis):-
 
 tamanho_sublistas([],[]).
 
-tamanho_sublistas([L1|T],[S1|Sl]):-
+tamanho_sublistas([L1|L],[S1|Slist]):-
     length(L1,S1),
-    tamanho_sublistas(T,Sl).
+    tamanho_sublistas(L,Slist).
 
 %---------------------------------------------------------------------------------
 % tamanho_permutacoes(Perms,PermSize)
@@ -562,9 +562,8 @@ escolhe_menos_alternativas(Perms_Possiveis, Escolha):-
     Check \== [],
     nth1(Ind,Size,ElMin),
     min_member(ElMin,Check),
-    ElMin>1,
-    % pq so queremos o primeiro se houver mais que um
-    !,
+    ElMin>1, 
+    !, % como so queremos o primeiro caso
     nth1(Ind,Perms_Possiveis,Escolha).
 
 % 3.2.2  <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
