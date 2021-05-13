@@ -328,26 +328,6 @@ permutacoes_possiveis_espaco(Eos,Psoma,E,Pposs):-
 
 % 3.1.10  <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
-%---------------------------------------------------------------------------------
-% get_todas_perm_possiveis(Espacos,Psoma,Ppe)
-% Espacos eh uma lista de espacos, Psoma eh uma lista de listas tal como 
-% obtido no predicado permutacoes_soma_espacos.
-%
-% Significa que Ppe eh a lista de permutacoes possiveis,
-% tal como descrito na Seccao 2.1, no passo 2.
-% --------------------------------------------------------------------------------
-
-get_todas_perm_possiveis(Espacos,Psoma,Ppe):-
-    get_todas_perm_possiveis(Espacos,Psoma,Ppe,Espacos).
-
-get_todas_perm_possiveis(_,_,[],[]).
-
-get_todas_perm_possiveis(Espacos,Psoma,[P1|Ppe],[E1|Espos]):-
-    permutacoes_possiveis_espaco(Espacos,Psoma,E1,P1),
-    get_todas_perm_possiveis(Espacos,Psoma,Ppe,Espos).
-
-
-
 %********************************************************************************
 % permutacoes_possiveis_espacos(Espacos, Perms_poss_esps)
 % Espacos eh uma lista de espacos
