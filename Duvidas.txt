@@ -1,21 +1,3 @@
-1. Pq é que me aparece aquele erro do __aux_maplist/2, quando faço maplist(=:=(0),Lista)
-
-2. Como definir as funcoes nos comentarios quando adiciono parametros
-
-3. Nos espacos_com_posicoes_comuns dava jeito passar Esp para a lista do espaco, 
-para nao o fazer tds os ciclos. Como podemos fazer isso.
-
-4. os parametros dos comentarios podem ser diff dos da funcao? 
-
-5. suposto devolver [] ou false na 3.1.8
-
-6. Substituicao para o if ([])->true; else....
-
-7. Pq q devolve false 
-
-9. Podemos ter uma f/3 e dps fazemos f/5 pq precisamos de +2 e assim nao definimos outra funcao?
-
-10. Ha limite de char por linha?
 
 
 Puzzle = [[[0, 0], [0, 0], [0, 0], [17, 0], [10, 0]],
