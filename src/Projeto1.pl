@@ -62,7 +62,14 @@ permutacoes_soma(N,Els,Soma,Combs):-
 %
 % Significa que L e uma lista que contem as variaveis de um Espaco
 % e o par com os numeros que vao determinar a soma do Espaco, dependendo
-% se eh linha ou coluna
+% se eh linha ou coluna.
+% 
+% Este predicado e dps definido tambem com aridade 3
+% get_varnum(F,L,C)
+% O novo argumento servira para guardar o estado (0,1 ou 2), onde:
+% 0 -> o predicado apenas esta a percorrer a lista para encontrar um espaco
+% 1 -> um espaco foi encontrado
+% 2 -> foi encontrado o fim do espaco em analise
 % --------------------------------------------------------------------------------
 get_varnum(F,L):-
     get_varnum(F,L,0).
@@ -72,6 +79,7 @@ get_varnum([],[],2).
 get_varnum([H|F],L,C):-
     C>=1,
     (var(H)->
+        % foi encontrado o fim de um espaco
         get_varnum(F,L2,2),
         append([H],L2,L);
     get_varnum([],L,C)).
@@ -79,9 +87,11 @@ get_varnum([H|F],L,C):-
 get_varnum([H|F],L,0):-
     nonvar(H),
     \+maplist(=:=(0),H),
+    % foi encontrado o inicio de um espaco
     get_varnum(F,L2,1),
     append([H],L2,L).
 
+% continuar a procura de espacos
 get_varnum([_|F],L,0):-
     get_varnum(F,L,0).
 
@@ -127,11 +137,15 @@ espacos_fila(Hv,Fila,Espacos):-
 %
 % Significa que Espacos eh a lista de espacos de Puzzle, tal como descrito na
 % Seccao 2.1, passo 1 do enunciado.
+%
+% Este predicado e dps definido tambem com aridade 4 
+% espacos_puzzle(Puzzle, Espacos, Hv, Pbase)
+% Hv -> indica se estamos a encontrar os espacos linha ou coluna
+% Pbase -> Puzzle recebido como argumento inicial, servira para 
+% depois se fazer a transposta do Puzzle sem problemas.
 %********************************************************************************
 
 espacos_puzzle(Puzzle,Espacos):-
-    %Vamos passar dois Puzzles, para depois poder fazer
-    %a transposta
     espacos_puzzle(Puzzle,Espacos,h,Puzzle).
 
 espacos_puzzle([],Esp,Hv,Pbase):-
@@ -140,11 +154,11 @@ espacos_puzzle([],Esp,Hv,Pbase):-
         espacos_puzzle(Pnew,Esp,v,_);
     Esp=[]).
 
-espacos_puzzle([P1|P2],Esp,Hv,Pbase):-
+espacos_puzzle([P1|Puzzle],Esp,Hv,Pbase):-
     (maplist(nonvar,P1) -> 
-        espacos_puzzle(P2,Esp,Hv,Pbase);
+        espacos_puzzle(Puzzle,Esp,Hv,Pbase);
     espacos_fila(Hv,P1,NewP),
-    espacos_puzzle(P2,Esp2,Hv,Pbase),
+    espacos_puzzle(Puzzle,Esp2,Hv,Pbase),
     append(NewP,Esp2,Esp)).
     
 
@@ -228,9 +242,9 @@ permutacoes_soma_espacos([H1|Espacos],Psoma):-
 % --------------------------------------------------------------------------------
 espaco_get_perms_soma(Esp,[H|Psoma],Eperm):-
     H = [Esp2,Perms],
-    (Esp2 == E ->
+    (Esp2 == Esp ->
         Eperm = Perms;
-    espaco_get_perms_soma(E,Psom,Eperm)).
+    espaco_get_perms_soma(Esp,Psoma,Eperm)).
 
 %---------------------------------------------------------------------------------
 % muda_var(A,Var,L1,L2)
@@ -301,7 +315,7 @@ permutacao_valida(Perm1,L1,[E1|Ecom],Psoma):-
 permutacao_possivel_espaco(Perm,Esp,Espacos,Psoma):-
     espacos_com_posicoes_comuns(Espacos,Esp,Ecom),
     espaco_get_perms_soma(Esp,Psoma,Eperm),
-    E = espaco(_,L1), 
+    Esp = espaco(_,L1), 
     member(Perm,Eperm),
     permutacao_valida(Perm,L1,Ecom,Psoma).
     
@@ -368,13 +382,19 @@ primeiro_el_igual(El1,[[El1|_]|L]):-
 %********************************************************************************
 % numeros_comuns(Lst_Perms, Numeros_comuns)
 % Lst_Perms eh uma lista de permutacoes
+%
 % Significa que Numeros_comuns eh uma lista de pares (pos, numero),
 % significando que todas as listas de Lst_Perms contem o numero numero na posicao
 % pos.
+%
+% Este predicado eh depois definido com aridade 4
+% numeros_comuns(Lst_Perms, Numeros_comuns,Min,N)
+% Min -> Caso a lista de permutacoes tenha permutacoes de tamanhos diferentes,
+% Min sera o tamanho da permutacao mais pequena
+% N -> o indice das permutacoes a analisar (comecando em 1 ate Min)
 %********************************************************************************
 
 numeros_comuns(Lst_Perms, Numeros_comuns):-
-    %se houver permutacoes de tamanho diferente, temos o Size min
     maplist(length,Lst_Perms,Size),
     min_member(Min,Size),
     numeros_comuns(Lst_Perms, Numeros_comuns,Min,1).
@@ -403,6 +423,11 @@ numeros_comuns([[El1|Res1]|Res], Numeros_comuns,Min,N):-
 %
 % Unifica as variaveis de Lst, com os valores de Numeros_comuns associado 
 % ao indice da variavel que se vai unificar
+%
+% Este predicado eh depois definido tambem com aridade 3
+% unifica_indices(Lst,Numeros_comuns,Ind)
+% Ind -> Corresponde ao indice inicial do primeiro elemento de Lst
+% (comeca em 1)
 % --------------------------------------------------------------------------------
 
 
@@ -412,16 +437,16 @@ unifica_indices(Lst,Numeros_comuns):-
 
 unifica_indices(_,[],_).
 
-unifica_indices([H1|Lst1],[(Ind,Val)|Numeros_comuns1],Ind):-
+unifica_indices([H1|Lst],[(Ind,Val)|Numeros_comuns],Ind):-
     H1 = Val,
     IndN is Ind+1,
-    unifica_indices(Lst1,Numeros_comuns1,IndN).
+    unifica_indices(Lst,Numeros_comuns,IndN).
 
     
-unifica_indices([_|Lst1],[(Ind1,Val)|Numeros_comuns1],Ind2):-
+unifica_indices([_|Lst],[(Ind1,Val)|Numeros_comuns],Ind2):-
     Ind1 =\= Ind2,
     IndN is Ind2+1,
-    unifica_indices(Lst1,[(Ind1,Val)|Numeros_comuns1],IndN).
+    unifica_indices(Lst,[(Ind1,Val)|Numeros_comuns],IndN).
 
 %********************************************************************************
 % atribui_comuns(Perms_Possiveis)
