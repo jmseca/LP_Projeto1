@@ -248,7 +248,7 @@ espaco_get_perms_soma(Esp,[H|Psoma],Eperm):-
 
 %---------------------------------------------------------------------------------
 % muda_var(A,Var,L1,L2)
-% A eh uma constante, Var uma variavel e L1 eh uma lista
+% A eh um atomo, Var uma variavel e L1 eh uma lista
 %
 % Significa que L2 eh a lista que resulta de substituir as variaveis Var 
 % da lista L1 para A
@@ -263,11 +263,11 @@ muda_var(A,Var,[H1|L1],L2):-
 
 %---------------------------------------------------------------------------------
 % muda_multi_var(La,Lvar,L1,L2)
-% La eh uma lista de constantes, Lvar eh uma lista de variaveis e L1 eh uma lista
+% La eh uma lista de atomos, Lvar eh uma lista de variaveis e L1 eh uma lista
 % O tamanho de La eh igual ao de Lvar
 %
 % Significa que L2 eh a lista  que resulta de substituir tds as 
-% ocorrencias das variaveis de Lvar em L1 pela constante correspondente em La.
+% ocorrencias das variaveis de Lvar em L1 pelo atomo correspondente em La.
 % --------------------------------------------------------------------------------
 
 muda_multi_var([H1|La],[H2|Lvar],L1,L2):-
@@ -468,7 +468,7 @@ atribui_comuns([P1|Perms_Possiveis1]):-
 
 %---------------------------------------------------------------------------------
 % retira_nao_unificaveis(Main,L1,L2)
-% Main eh uma lista de variaveis e constantes e L1 eh uma lista de listas
+% Main eh uma lista de variaveis e atomos e L1 eh uma lista de listas
 %
 % Significa que L2 eh a lista de listas que resulta de remover todas
 % as sublistas de L1 que nao unificam com Main
