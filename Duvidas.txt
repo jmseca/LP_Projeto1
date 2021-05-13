@@ -1,12 +1,3 @@
-2. Como definir as funcoes nos comentarios quando adiciono parametros
-
-4. os parametros dos comentarios podem ser diff dos da funcao? 
-
-5. constante ou atomo?
-
-9. Podemos ter uma f/3 e dps fazemos f/5 pq precisamos de +2 e assim nao definimos outra funcao?
-
-10. Ha limite de char por linha?
 
 
 Puzzle = [[[0, 0], [0, 0], [0, 0], [17, 0], [10, 0]],
