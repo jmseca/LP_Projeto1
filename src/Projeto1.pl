@@ -8,13 +8,11 @@
 % sum_equal(N,L)
 % N eh um inteiro e L uma lista.
 %
-% Devolve true se N for a soma de todos os elementos da lista L, 
-% false caso contrario
+% Significa que N eh a soma de todos os elementos da lista L.
 % -----------------------------------------------------------------------------
 
 sum_equal(N,L):-
-    sum_list(L,Size),
-    Size =:= N.
+    sum_list(L,N).
 
 %******************************************************************************
 % combinacoes_soma(N, Els, Soma, Combs)
@@ -167,7 +165,8 @@ espacos_puzzle([P1|Puzzle],Esp,Hv,Pbase):-
 %------------------------------------------------------------------------------
 % var_in_list(V,L2)
 % V eh uma variavel
-% Significa que a mesma variavel V encontra-se em L2
+%
+% Significa que V encontra-se em L2
 % -----------------------------------------------------------------------------
 var_in_list(V,[H2|L2]):-
     (L2 == [] -> 
@@ -179,6 +178,7 @@ var_in_list(V,[H2|L2]):-
 %------------------------------------------------------------------------------
 % vars_in_list(L1,L2)
 % L1 e L2 sao listas de variaveis
+%
 % Significa que ha pelo menos uma variavel comum entre L1 e L2
 % -----------------------------------------------------------------------------
 
@@ -194,9 +194,9 @@ vars_in_list([_|L1],L2):-
 %******************************************************************************
 % espacos_com_posicoes_comuns(Espacos,Esp,Ecom)
 % Espacoes eh uma lista de espacos e Esp eh um espaco.
+%
 % Significa que Ecom eh a lista de espacos com variaveis em
 % comum com Esp, exceptuando Esp.
-% 
 %******************************************************************************
 
 espacos_com_posicoes_comuns([],_,[]).
@@ -217,6 +217,7 @@ espacos_com_posicoes_comuns([H|Espacos],Esp,Ecom):-
 %******************************************************************************
 % permutacoes_soma_espacos(Espacos,Psoma)
 % Espacos eh uma lista de espacos.
+%
 % Significa que Psoma eh a lista de listas de 2 elementos, em que
 % o 1o elemento eh um espaco de Espacos e o 2o eh a lista ordenada
 % de permutacoes cuja soma eh igual a soma do espaco
@@ -237,6 +238,7 @@ permutacoes_soma_espacos([H1|Espacos],Psoma):-
 % espaco_get_perms_soma(Esp,Psoma,Eperm)
 % Esp eh um Espaco e Perms_soma eh uma lista de listas tal como 
 % obtido no predicado permutacoes_soma_espacos.
+%
 % Significa que Eperm eh a lista de permutacoes de Perm_soma associada
 % ao espaco Esp.
 % -----------------------------------------------------------------------------
@@ -359,6 +361,7 @@ permutacoes_possiveis_espacos(Espacos, Perms_poss_esps):-
 %------------------------------------------------------------------------------
 % elimina_primeiros_el(L,L1)
 % L eh uma lista de listas
+%
 % Significa que L1 eh L sem o primeiro elemento de cada sublista.
 % -----------------------------------------------------------------------------
 
@@ -370,6 +373,7 @@ elimina_primeiros_el([[_|T1]|L],[T1|L1]):-
 %------------------------------------------------------------------------------
 % primeiro_el_igual(El1,L)
 % L eh uma lista de listas
+%
 % Significa que El1 eh o primeiro elemento de todas as sublistas de L.
 % -----------------------------------------------------------------------------
 
@@ -588,7 +592,7 @@ escolhe_menos_alternativas(Perms_Possiveis, Escolha):-
     nth1(Ind,Size,ElMin),
     min_member(ElMin,Check),
     ElMin>1, 
-    !, % como so queremos o primeiro caso
+    !, % so queremos o primeiro caso
     nth1(Ind,Perms_Possiveis,Escolha).
 
 % 3.2.2  <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
