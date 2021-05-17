@@ -1,4 +1,4 @@
-% Joao Fonseca 95749
+% Joao Miguel Fonseca - 95749
 
 :- [codigo_comum].
 
